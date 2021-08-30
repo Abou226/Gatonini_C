@@ -2,7 +2,6 @@
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using System;
@@ -13,19 +12,19 @@ using System.Threading.Tasks;
 
 namespace Gatonini.Server.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
-    public class IngredientsController : GenericController<TblProduit, TblUser, TblInventaire>
+    public class IngredientsController : GenericController<Ingredient, User>
     {
-        private readonly IGenericRepositoryWrapper<TblProduit, TblUser, TblInventaire> repositoryWrapper;
-        public IngredientsController(IGenericRepositoryWrapper<TblProduit, TblUser, TblInventaire> wrapper) : base(wrapper)
+        private readonly IGenericRepositoryWrapper<Ingredient, User> repositoryWrapper;
+        public IngredientsController(IGenericRepositoryWrapper<Ingredient, User> wrapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
         }
 
         [HttpDelete("{id}")]
-        public override async Task<ActionResult<TblProduit>> Delete([FromRoute] int id)
+        public override async Task<ActionResult<Ingredient>> Delete([FromRoute] Guid id)
         {
             try
             {
@@ -34,7 +33,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    TblProduit u = new TblProduit();
+                    Ingredient u = new Ingredient();
                     u.Id = id;
                     repositoryWrapper.Item.Delete(u);
                     await repositoryWrapper.SaveAsync();
@@ -44,32 +43,11 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }
         }
 
-        public override async Task<ActionResult<TblProduit>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] int id)
-        {
-            try
-            {
-                var item = await repositoryWrapper.Item.GetBy(x => x.Id == id);
-                if (item.Count() != 0)
-                {
-                    var single = item.First();
-                    value.ApplyTo(single);
-                    await repositoryWrapper.SaveAsync();
-                }
-                else return NotFound("User not indentified");
-
-                return Ok(value);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        public override async Task<ActionResult<IEnumerable<TblProduit>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<Ingredient>>> GetAll()
         {
             try
             {
@@ -90,8 +68,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        [HttpGet("{userid:Guid}")]
-        public async Task<ActionResult<IEnumerable<TblInventaire>>> GetAllForUser(int userid)
+        public override async Task<ActionResult<IEnumerable<Ingredient>>> GetBy(string search)
         {
             try
             {
@@ -100,7 +77,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Id == userid);
+                    var result = await repositoryWrapper.ItemA.GetBy(x => x.Id.ToString().Equals(search));
 
                     return Ok(result);
                 }
@@ -108,57 +85,11 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur de serveur");
             }
         }
 
-        public override async Task<ActionResult<IEnumerable<TblProduit>>> GetBy(string search)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Nom.Contains(search) || x.Ref.Contains(search) 
-                    || x.Auteur.Contains(search) || x.Unité.Contains(search));
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("{start:DateTime}/{end:DateTime}")]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetByInclude(DateTime start, DateTime end)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.DateAjout.Value.Date <= end
-                    && x.DateAjout.Value.Date >= start);
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        public override async Task<ActionResult<TblProduit>> AddAsync([FromBody] TblProduit value)
+        public override async Task<ActionResult<Ingredient>> AddAsync([FromBody] Ingredient value)
         {
             try
             {
@@ -171,13 +102,12 @@ namespace Gatonini.Server.Controllers
 
                 if (identity.Count() != 0)
                 {
-                    var reser = await repositoryWrapper.Item.GetLast(x => x.Id != 0);
+                    value.Id = Guid.NewGuid();
+                    //value.UserId = identity.First().Id;
+                    //if (value.DateOfCreation == Convert.ToDateTime("0001-01-01T00:00:00"))
+                    //    value.DateOfCreation = DateTime.Now;
 
-                    value.Id = reser.Id + 1;
-                    if (value.DateAjout == Convert.ToDateTime("0001-01-01T00:00:00"))
-                        value.DateAjout = DateTime.Now;
-
-
+                    //value.ServerTime = DateTime.Now;
                     await repositoryWrapper.ItemA.AddAsync(value);
                     await repositoryWrapper.SaveAsync();
                 }
@@ -191,7 +121,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        public override async Task<ActionResult<IEnumerable<TblProduit>>> GetBy(string search, DateTime start, DateTime end)
+        public override async Task<ActionResult<IEnumerable<Ingredient>>> GetBy(string search, DateTime start, DateTime end)
         {
             try
             {
@@ -201,14 +131,30 @@ namespace Gatonini.Server.Controllers
 
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetBy(
-                        x => x.Nom.ToString().Contains(search)
-                    || x.Auteur.Contains(search)
-                    || x.Ref.Contains(search)
-                    || x.Auteur.Contains(search)
-                    || x.Unité.Contains(search) &&
-                    (x.DateAjout.Value.Date <= end
-                    && x.DateAjout.Value.Date >= start));
+                    var result = await repositoryWrapper.ItemA.GetBy(x => x.Name.Contains(search));
+
+                    return Ok(result);
+                }
+                else return NotFound("User not indentified");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("{start:DateTime}/{end:DateTime}")]
+        public async Task<ActionResult<IEnumerable<Ingredient>>> GetBy(DateTime start, DateTime end)
+        {
+            try
+            {
+                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
+                Equals(claim));
+
+                if (identity.Count() != 0)
+                {
+                    var result = await repositoryWrapper.Item.GetAll();
 
                     return Ok(result);
                 }
@@ -221,4 +167,3 @@ namespace Gatonini.Server.Controllers
         }
     }
 }
-

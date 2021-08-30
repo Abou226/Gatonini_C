@@ -7,7 +7,7 @@ namespace Gatonini.BaseVM
 {
     public class BaseViewModel : INotifyPropertyChanged, IBaseViewModel
     {
-        public const string baseurl = "http://Gatoniniserver-dev.us-east-1.elasticbeanstalk.com/";
+        public const string baseurl = "http://gatoniniserver-dev.us-east-1.elasticbeanstalk.com/";
 
         public HttpClient httpClient;
         public HttpClient Client => httpClient ?? (httpClient = new HttpClient());
@@ -17,9 +17,13 @@ namespace Gatonini.BaseVM
             Client.BaseAddress = new Uri(baseurl);
         }
 
+        public static string DateToString(DateTime start, DateTime end)
+        {
+            return start.ToString("MM-dd-yyyy") + "/" + end.ToString("MM-dd-yyyy");
+        }
 
 
-        string title = "Mahal Fial";
+        string title = "Gatonini";
         public string Title
         {
             get => title;

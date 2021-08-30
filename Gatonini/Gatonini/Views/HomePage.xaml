@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:local="clr-namespace:Gatonini" 
+             xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView" 
+             xmlns:local1="clr-namespace:Gatonini.Models;assembly=Gatonini.Models"
+             x:Class="Gatonini.HomePage" NavigationPage.HasNavigationBar="False">
+
+
+    <ContentPage.Resources>
+        <Style TargetType="pancake:PancakeView" x:Key="StyledPancake">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor"
+                                        Value="{DynamicResource Secondary}"/>
+                                <Setter TargetName="lblNom" 
+                                        Property="Label.TextColor" 
+                                        Value="{DynamicResource Secondary}"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <local:HomeViewModel/>
+    </ContentPage.BindingContext>
+
+    <Grid>
+        <SwipeView>
+            <SwipeView.LeftItems>
+                <SwipeItemView x:Name="MenuSwipeView" >
+                    <Grid WidthRequest="240">
+                        <pancake:PancakeView HorizontalOptions="Fill" VerticalOptions="Fill" CornerRadius="40,0,0,0" Margin="0,-10">
+                            <Image BackgroundColor="Transparent" Source="PhoneBackground.png" Aspect="AspectFill" />
+                        </pancake:PancakeView>
+                        <StackLayout>
+                            <pancake:PancakeView HeightRequest="90">
+
+                            </pancake:PancakeView>
+                            <pancake:PancakeView CornerRadius="20" >
+                                <StackLayout>
+                                    <StackLayout Orientation="Horizontal" Margin="10,5" x:Name="btnCommand">
+                                        <ImageButton BackgroundColor="Transparent" Source="sales.png"/>
+                                        <Label Text="Commandes"/>
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:HomeViewModel}}, Path=ReservationsCommand}"		
+                                                        CommandParameter="{Binding .}">
+                                            </TapGestureRecognizer>
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                    <StackLayout Orientation="Horizontal" Margin="10,5">
+                                        <Image BackgroundColor="Transparent" Source="shipped.png"/>
+                                        <Label Text="Livraisons"/>
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:HomeViewModel}}, Path=LivraisonCommand}"		
+                                                        CommandParameter="{Binding .}">
+                                            </TapGestureRecognizer>
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                    <StackLayout Orientation="Horizontal" Margin="10,5">
+                                        <Image  BackgroundColor="Transparent" Source="hand.png"/>
+                                        <Label Text="Payements"/>
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:HomeViewModel}}, Path=PayementCommand}"		
+                                                        CommandParameter="{Binding .}">
+                                            </TapGestureRecognizer>
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+
+                                    <Line Margin="10,2" StrokeThickness="1" BackgroundColor="{DynamicResource ThirdColor}"/>
+                                    <StackLayout Orientation="Horizontal" Margin="10,5">
+                                        <Image BackgroundColor="Transparent" Source=""/>
+                                        <Label Text="Déconnexion"/>
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:HomeViewModel}}, Path=LogOutCommand}"		
+                                                        CommandParameter="{Binding .}">
+                                            </TapGestureRecognizer>
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                </StackLayout>
+                            </pancake:PancakeView>
+                        </StackLayout>
+
+                    </Grid>
+                </SwipeItemView>
+            </SwipeView.LeftItems>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ScrollView Orientation="Vertical" MinimumHeightRequest="800">
+                    <StackLayout Orientation="Vertical" BackgroundColor="{DynamicResource Primary}">
+                        <RefreshView 
+                    IsRefreshing="{Binding IsNotBusy, Mode=TwoWay}"
+                    Command="{Binding RefreshCommande}" 
+                    RefreshColor="{DynamicResource Secondary}">
+                            <StackLayout Margin="20,20">
+                                <StackLayout Orientation="Horizontal">
+                                    <ImageButton Source="Menu.png" HeightRequest="30"
+                                 WidthRequest="30" 
+                                 BackgroundColor="Transparent" 
+                                                 HorizontalOptions="Center" VerticalOptions="CenterAndExpand"/>
+                                    <StackLayout HorizontalOptions="EndAndExpand" VerticalOptions="Start">
+                                        <Frame CornerRadius="50" WidthRequest="15" HeightRequest="15">
+                                            <Image Source="{Binding ProfilePicture}" />
+                                        </Frame>
+                                    </StackLayout>
+                                </StackLayout>
+                                <StackLayout>
+                                    <Label Margin="5,15,0,-5" Text="Veillez faire"/>
+                                    <Label Margin="5,-2,0,-5" Text="Votre choix ci dessous." 
+                               FontAttributes="Bold" FontSize="18"/>
+                                </StackLayout>
+
+                                <Frame Margin="0,20,0,0" CornerRadius="40" HeightRequest="10">
+                                    <SearchBar Margin="-20,-10" Placeholder="Rechercher....." PlaceholderColor="{DynamicResource Secondary}" 
+                                   TextColor="{DynamicResource Secondary}"  />
+                                </Frame>
+
+
+                                <Label Text="Departements" TextColor="{DynamicResource Secondary}" 
+                           FontSize="16" 
+                           FontAttributes="Bold" Margin="0,20,0,0"/>
+                                <CollectionView  ItemsSource="{Binding Departements}"
+                                                    SelectionMode="Single"
+                                                 x:Name="Categorie_CollectionView"
+                                                     Margin="0,10"
+                                                    HeightRequest="100">
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid HeightRequest="70" x:DataType="local1:Departement">
+                                                <VisualStateManager.VisualStateGroups>
+                                                    <VisualStateGroup x:Name="ColorStates">
+                                                        <VisualState x:Name="Normal" />
+                                                        <VisualState x:Name="Selected">
+                                                            <VisualState.Setters>
+                                                                <Setter TargetName="myCategoriePancakeView" 
+                                                            Property="pancake:PancakeView.BackgroundColor" Value="Azure"/>
+                                                            </VisualState.Setters>
+                                                        </VisualState>
+                                                    </VisualStateGroup>
+                                                </VisualStateManager.VisualStateGroups>
+                                                <pancake:PancakeView x:Name="myCategoriePancakeView" 
+                                                         Style="{StaticResource StyledPancake}"
+                                                         CornerRadius="80" HeightRequest="70" 
+                                                         WidthRequest="80" Padding="10" Margin="5,0,0,0" 
+                                                     BackgroundColor="{DynamicResource VeryLight}">
+                                                    <pancake:PancakeView.Border>
+                                                        <pancake:Border Color="{DynamicResource Primary}" Thickness="3"/>
+                                                    </pancake:PancakeView.Border>
+                                                    <pancake:PancakeView.Shadow>
+                                                        <pancake:DropShadow Color="{DynamicResource Primary}" Offset="10,10"/>
+                                                    </pancake:PancakeView.Shadow>
+
+                                                    <StackLayout Orientation="Vertical" 
+                                                     BackgroundColor="Transparent">
+                                                        <Image Source="{Binding Url}"
+                                                                Margin="0,5,0,0"
+                                                                HorizontalOptions="Center"
+                                                                VerticalOptions="Center"
+                                                                WidthRequest="70"
+                                                                HeightRequest="50"
+                                                                Aspect="AspectFill"/>
+                                                        <StackLayout HorizontalOptions="Center"
+                                         VerticalOptions="Center" BackgroundColor="Transparent">
+                                                            <Label x:Name="lblNom" Text="{Binding Name}" 
+                                                       FontAttributes="Bold" TextColor="{DynamicResource Secondary}" />
+                                                        </StackLayout>
+                                                    </StackLayout>
+                                                </pancake:PancakeView>
+                                                <Grid.GestureRecognizers>
+                                                    <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:HomeViewModel}}, Path=DepartementTapped}"		
+                                                        CommandParameter="{Binding .}">
+                                                    </TapGestureRecognizer>
+                                                </Grid.GestureRecognizers>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <ContentView>
+                                            <StackLayout HorizontalOptions="CenterAndExpand"
+                                            VerticalOptions="CenterAndExpand">
+                                                <Label Text="Aucun resultat à afficher."
+                                        Margin="10,25,10,10"
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Center" 
+                                        TextColor="{DynamicResource Secondary}"/>
+                                                <Label Text="Verifier votre connection internet !"
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Center" TextColor="{DynamicResource Secondary}" />
+                                            </StackLayout>
+                                        </ContentView>
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                                <StackLayout Orientation="Horizontal">
+                                    <Label Text="Sections" TextColor="{DynamicResource Secondary}" 
+                       FontSize="16" FontAttributes="Bold" Margin="0,20,0,0"/>
+                                   
+                                </StackLayout>
+                                <CollectionView  ItemsSource="{Binding Sections}"
+                                                    SelectionMode="Single"
+                                                 
+                                                     Margin="0,10"
+                                                    HeightRequest="100">
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid HeightRequest="70" x:DataType="local1:Section">
+                                                <VisualStateManager.VisualStateGroups>
+                                                    <VisualStateGroup x:Name="ColorStates">
+                                                        <VisualState x:Name="Normal" />
+                                                        <VisualState x:Name="Selected">
+                                                            <VisualState.Setters>
+                                                                <Setter TargetName="myCategoriePancakeView" 
+                                                            Property="pancake:PancakeView.BackgroundColor" Value="Azure"/>
+                                                            </VisualState.Setters>
+                                                        </VisualState>
+                                                    </VisualStateGroup>
+                                                </VisualStateManager.VisualStateGroups>
+                                                <pancake:PancakeView x:Name="myCategoriePancakeView" 
+                                                         Style="{StaticResource StyledPancake}"
+                                                         CornerRadius="80" HeightRequest="70" 
+                                                         WidthRequest="80" Padding="10" Margin="5,0,0,0" 
+                                                     BackgroundColor="{DynamicResource VeryLight}">
+                                                    <pancake:PancakeView.Border>
+                                                        <pancake:Border Color="{DynamicResource Primary}" Thickness="3"/>
+                                                    </pancake:PancakeView.Border>
+                                                    <pancake:PancakeView.Shadow>
+                                                        <pancake:DropShadow Color="{DynamicResource Primary}" Offset="10,10"/>
+                                                    </pancake:PancakeView.Shadow>
+
+                                                    <StackLayout Orientation="Vertical" 
+                                                     BackgroundColor="Transparent">
+                                                        <Image Source="{Binding Url}"
+                                                                Margin="0,5,0,0"
+                                                                HorizontalOptions="Center"
+                                                                VerticalOptions="Center"
+                                                                WidthRequest="70"
+                                                                HeightRequest="50"
+                                                                Aspect="AspectFill"/>
+                                                        <StackLayout HorizontalOptions="Center"
+                                         VerticalOptions="Center" BackgroundColor="Transparent">
+                                                            <Label x:Name="lblNom" Text="{Binding Name}" 
+                                                       FontAttributes="Bold" TextColor="{DynamicResource Secondary}" />
+                                                        </StackLayout>
+                                                    </StackLayout>
+                                                </pancake:PancakeView>
+                                                <Grid.GestureRecognizers>
+                                                    <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:HomeViewModel}}, Path=SectionTapped}"		
+                                                        CommandParameter="{Binding .}">
+                                                    </TapGestureRecognizer>
+                                                </Grid.GestureRecognizers>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <ContentView>
+                                            <StackLayout HorizontalOptions="CenterAndExpand"
+                                            VerticalOptions="CenterAndExpand">
+                                                <Label Text="Aucun resultat à afficher."
+                                        Margin="10,25,10,10"
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Center" 
+                                        TextColor="{DynamicResource Secondary}"/>
+                                                <Label Text="Verifier votre connection internet !"
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Center" TextColor="{DynamicResource Secondary}" />
+                                            </StackLayout>
+                                        </ContentView>
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                                <Label Text="Details" TextColor="{DynamicResource Secondary}" 
+                       FontSize="16" FontAttributes="Bold" Margin="0,20,0,0"/>
+                                <CollectionView 
+                                            BackgroundColor="{DynamicResource VeryLight}"
+                                            ItemsSource="{Binding Details}"
+                                            SelectionMode="Single"
+                                            
+                                            Margin="0,10" >
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackLayout HeightRequest="85" >
+                                                <VisualStateManager.VisualStateGroups>
+                                                    <VisualStateGroup x:Name="ColorStates">
+                                                        <VisualState x:Name="Normal" />
+                                                        <VisualState x:Name="Selected">
+                                                            <VisualState.Setters>
+                                                                <Setter TargetName="myPancakeView" Property="pancake:PancakeView.BackgroundColor" 
+                                                                Value="Azure"/>
+                                                            </VisualState.Setters>
+                                                        </VisualState>
+                                                    </VisualStateGroup>
+                                                </VisualStateManager.VisualStateGroups>
+                                                <pancake:PancakeView x:Name="myPancakeView" CornerRadius="30" HeightRequest="80" 
+                                                         Padding="10" Margin="5,5,5,5" 
+                                                         BackgroundColor="{DynamicResource Primary}" >
+                                                    <pancake:PancakeView.Border>
+                                                        <pancake:Border Color="{DynamicResource Primary}" 
+                                                            Thickness="3"/>
+                                                    </pancake:PancakeView.Border>
+                                                    <pancake:PancakeView.Shadow>
+                                                        <pancake:DropShadow Color="{DynamicResource Primary}" 
+                                                                Offset="10,10"/>
+                                                    </pancake:PancakeView.Shadow>
+                                                    <Grid>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="60"/>
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Frame CornerRadius="40" Padding="-10"  >
+                                                                <pancake:PancakeView CornerRadius="55">
+                                                                    <Image Source="{Binding Url}" 
+                                                                                Margin="5,0"
+                                                                                HorizontalOptions="Center"
+                                                                                VerticalOptions="Center"
+                                                                                Aspect="AspectFill"
+                                                                                WidthRequest="60"/>
+                                                                </pancake:PancakeView>
+                                                            </Frame>
+                                                            <Grid  Grid.Column="1"
+                                                                                    VerticalOptions="Center">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition />
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                    </Grid.ColumnDefinitions>
+
+                                                                    <StackLayout>
+                                                                        <Label x:Name="lblNom" Text="{Binding Name}" 
+                                                                                   FontAttributes="Bold" 
+                                                                                   TextColor="{DynamicResource Secondary}"/>
+                                                                        <Label x:Name="lblPrice" 
+                                                                                   Text="{Binding Prix_Unité, StringFormat='A partir {0:#,##0} F CFA'}"
+                                                                                   FontSize="16"
+                                                                                   FontAttributes="Bold" 
+                                                                                   TextColor="{DynamicResource Secondary}"/>
+                                                                    </StackLayout>
+                                                                    <Grid WidthRequest="70" Grid.Column="1" HorizontalOptions="End"
+                                                                                Margin="0,-10,0,0"
+                                                                                 VerticalOptions="Start" >
+
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Grid>
+                                                </pancake:PancakeView>
+                                                <StackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:HomeViewModel}}, Path=DetailsTapped}"		
+                                                        CommandParameter="{Binding .}">
+                                                    </TapGestureRecognizer>
+                                                </StackLayout.GestureRecognizers>
+                                            </StackLayout>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <ContentView BackgroundColor="{DynamicResource Primary}">
+                                            <StackLayout HorizontalOptions="CenterAndExpand"
+                                            VerticalOptions="CenterAndExpand">
+                                                <Label Text="Aucun resultat à afficher."
+                                                            Margin="10,25,10,10"
+                                                            FontAttributes="Bold"
+                                                            FontSize="18"
+                                                            HorizontalOptions="Fill"
+                                                            HorizontalTextAlignment="Center" 
+                                                            TextColor="{DynamicResource Secondary}"/>
+                                                <Label Text="Selectionner une catégorie dessus!"
+                                                            FontAttributes="Italic"
+                                                            FontSize="12"
+                                                            HorizontalOptions="Fill"
+                                                            HorizontalTextAlignment="Center" 
+                                                            TextColor="{DynamicResource Secondary}" />
+                                            </StackLayout>
+                                        </ContentView>
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                            </StackLayout>
+                        </RefreshView>
+                    </StackLayout>
+                </ScrollView>
+
+                <pancake:PancakeView Grid.Row="1" CornerRadius="20,20,0,0"  
+                                     Margin="0,-20,0,0" 
+                                     BackgroundColor="{DynamicResource Primary}" >
+                    <Grid HeightRequest="50" Margin="0,3,0,0" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                    </Grid>
+                </pancake:PancakeView>
+            </Grid>
+        </SwipeView>
+    </Grid>
+</ContentPage>

@@ -1,6 +1,5 @@
 ﻿using Contracts;
 using Entities;
-using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace Repository
 {
     public class GenericRepositoryWrapper<A> : IGenericRepositoryWrapper<A> where A : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
         private IGenericRepository<A> item;
         public IGenericRepository<A> Item 
@@ -19,25 +18,25 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A>(GestionCommercialContext);
+                    item = new GenericRepository<A>(repositoryContext);
                 return item;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-          await  GestionCommercialContext.SaveChangesAsync();
+          await  repositoryContext.SaveChangesAsync();
         }
     }
 
     public class GenericRepositoryWrapper<A, B> : IGenericRepositoryWrapper<A, B> where A : class where B : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
         private IGenericRepository<A> itemA;
         public IGenericRepository<A> ItemA
@@ -45,7 +44,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -56,7 +55,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B>(GestionCommercialContext);
+                    item = new GenericRepository<A, B>(repositoryContext);
                 return item;
             }
         }
@@ -67,25 +66,25 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
         }
     }
 
     public class GenericRepositoryWrapper<A, B, C> : IGenericRepositoryWrapper<A, B, C> where A : class where B : class where C : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
         private IGenericRepository<A> itemA;
         public IGenericRepository<A> ItemA
@@ -93,7 +92,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -104,7 +103,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B, C>(GestionCommercialContext);
+                    item = new GenericRepository<A, B, C>(repositoryContext);
                 return item;
             }
         }
@@ -115,7 +114,7 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
@@ -126,24 +125,24 @@ namespace Repository
             get
             {
                 if (itemC == null)
-                    itemC = new GenericRepository<C>(GestionCommercialContext);
+                    itemC = new GenericRepository<C>(repositoryContext);
                 return itemC;
             }
         }
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
         }
     }
 
     public class GenericRepositoryWrapper<A, B, C, D> : IGenericRepositoryWrapper<A, B, C, D> where A : class where B : class where C : class where D : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
 
         private IGenericRepository<A, B, C, D> item;
@@ -152,7 +151,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B, C, D>(GestionCommercialContext);
+                    item = new GenericRepository<A, B, C, D>(repositoryContext);
                 return item;
             }
         }
@@ -163,7 +162,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -174,7 +173,7 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
@@ -185,7 +184,7 @@ namespace Repository
             get
             {
                 if (itemC == null)
-                    itemC = new GenericRepository<C>(GestionCommercialContext);
+                    itemC = new GenericRepository<C>(repositoryContext);
                 return itemC;
             }
         }
@@ -196,25 +195,25 @@ namespace Repository
             get
             {
                 if (itemD == null)
-                    itemD = new GenericRepository<D>(GestionCommercialContext);
+                    itemD = new GenericRepository<D>(repositoryContext);
                 return itemD;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
         }
     }
 
     public class GenericRepositoryWrapper<A, B, C, D, E> : IGenericRepositoryWrapper<A, B, C, D, E> where A : class where B : class where C : class where D : class where E : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
 
         private IGenericRepository<A, B, C, D, E> item;
@@ -223,7 +222,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B, C, D, E>(GestionCommercialContext);
+                    item = new GenericRepository<A, B, C, D, E>(repositoryContext);
                 return item;
             }
         }
@@ -234,7 +233,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -245,7 +244,7 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
@@ -256,7 +255,7 @@ namespace Repository
             get
             {
                 if (itemC == null)
-                    itemC = new GenericRepository<C>(GestionCommercialContext);
+                    itemC = new GenericRepository<C>(repositoryContext);
                 return itemC;
             }
         }
@@ -267,7 +266,7 @@ namespace Repository
             get
             {
                 if (itemD == null)
-                    itemD = new GenericRepository<D>(GestionCommercialContext);
+                    itemD = new GenericRepository<D>(repositoryContext);
                 return itemD;
             }
         }
@@ -278,25 +277,25 @@ namespace Repository
             get
             {
                 if (itemE == null)
-                    itemE = new GenericRepository<E>(GestionCommercialContext);
+                    itemE = new GenericRepository<E>(repositoryContext);
                 return itemE;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
         }
     }
 
     public class GenericRepositoryWrapper<A, B, C, D, E, F> : IGenericRepositoryWrapper<A, B, C, D, E, F> where A : class where B : class where C : class where D : class where E : class where F : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
         private IGenericRepository<A, B, C, D, E, F> item;
         public IGenericRepository<A, B, C, D, E, F> Item
@@ -304,7 +303,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B, C, D, E, F>(GestionCommercialContext);
+                    item = new GenericRepository<A, B, C, D, E, F>(repositoryContext);
                 return item;
             }
         }
@@ -315,7 +314,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -326,7 +325,7 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
@@ -337,7 +336,7 @@ namespace Repository
             get
             {
                 if (itemC == null)
-                    itemC = new GenericRepository<C>(GestionCommercialContext);
+                    itemC = new GenericRepository<C>(repositoryContext);
                 return itemC;
             }
         }
@@ -348,7 +347,7 @@ namespace Repository
             get
             {
                 if (itemD == null)
-                    itemD = new GenericRepository<D>(GestionCommercialContext);
+                    itemD = new GenericRepository<D>(repositoryContext);
                 return itemD;
             }
         }
@@ -359,7 +358,7 @@ namespace Repository
             get
             {
                 if (itemE == null)
-                    itemE = new GenericRepository<E>(GestionCommercialContext);
+                    itemE = new GenericRepository<E>(repositoryContext);
                 return itemE;
             }
         }
@@ -370,19 +369,19 @@ namespace Repository
             get
             {
                 if (itemF == null)
-                    itemF = new GenericRepository<F>(GestionCommercialContext);
+                    itemF = new GenericRepository<F>(repositoryContext);
                 return itemF;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
         }
     }
 
@@ -390,7 +389,7 @@ namespace Repository
         IGenericRepositoryWrapper<A, B, C, D, E, F, G> where A : class 
         where B : class where C : class where D : class where E : class where F : class where G : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
         private IGenericRepository<A, B, C, D, E, F, G> item;
         public IGenericRepository<A, B, C, D, E, F, G> Item
@@ -398,7 +397,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B, C, D, E, F, G>(GestionCommercialContext);
+                    item = new GenericRepository<A, B, C, D, E, F, G>(repositoryContext);
                 return item;
             }
         }
@@ -409,7 +408,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -420,7 +419,7 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
@@ -431,7 +430,7 @@ namespace Repository
             get
             {
                 if (itemC == null)
-                    itemC = new GenericRepository<C>(GestionCommercialContext);
+                    itemC = new GenericRepository<C>(repositoryContext);
                 return itemC;
             }
         }
@@ -442,7 +441,7 @@ namespace Repository
             get
             {
                 if (itemD == null)
-                    itemD = new GenericRepository<D>(GestionCommercialContext);
+                    itemD = new GenericRepository<D>(repositoryContext);
                 return itemD;
             }
         }
@@ -453,7 +452,7 @@ namespace Repository
             get
             {
                 if (itemE == null)
-                    itemE = new GenericRepository<E>(GestionCommercialContext);
+                    itemE = new GenericRepository<E>(repositoryContext);
                 return itemE;
             }
         }
@@ -464,7 +463,7 @@ namespace Repository
             get
             {
                 if (itemF == null)
-                    itemF = new GenericRepository<F>(GestionCommercialContext);
+                    itemF = new GenericRepository<F>(repositoryContext);
                 return itemF;
             }
         }
@@ -475,19 +474,19 @@ namespace Repository
             get
             {
                 if (itemG == null)
-                    itemG = new GenericRepository<G>(GestionCommercialContext);
+                    itemG = new GenericRepository<G>(repositoryContext);
                 return itemG;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
         }
     }
 
@@ -495,7 +494,7 @@ namespace Repository
         IGenericRepositoryWrapper<A, B, C, D, E, F, G, H> where A : class
         where B : class where C : class where D : class where E : class where F : class where G : class where H : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
         private IGenericRepository<A, B, C, D, E, F, G, H> item;
         public IGenericRepository<A, B, C, D, E, F, G, H> Item
@@ -503,7 +502,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B, C, D, E, F, G, H>(GestionCommercialContext);
+                    item = new GenericRepository<A, B, C, D, E, F, G, H>(repositoryContext);
                 return item;
             }
         }
@@ -514,7 +513,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -525,7 +524,7 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
@@ -536,7 +535,7 @@ namespace Repository
             get
             {
                 if (itemC == null)
-                    itemC = new GenericRepository<C>(GestionCommercialContext);
+                    itemC = new GenericRepository<C>(repositoryContext);
                 return itemC;
             }
         }
@@ -547,7 +546,7 @@ namespace Repository
             get
             {
                 if (itemD == null)
-                    itemD = new GenericRepository<D>(GestionCommercialContext);
+                    itemD = new GenericRepository<D>(repositoryContext);
                 return itemD;
             }
         }
@@ -558,7 +557,7 @@ namespace Repository
             get
             {
                 if (itemE == null)
-                    itemE = new GenericRepository<E>(GestionCommercialContext);
+                    itemE = new GenericRepository<E>(repositoryContext);
                 return itemE;
             }
         }
@@ -569,7 +568,7 @@ namespace Repository
             get
             {
                 if (itemF == null)
-                    itemF = new GenericRepository<F>(GestionCommercialContext);
+                    itemF = new GenericRepository<F>(repositoryContext);
                 return itemF;
             }
         }
@@ -580,7 +579,7 @@ namespace Repository
             get
             {
                 if (itemG == null)
-                    itemG = new GenericRepository<G>(GestionCommercialContext);
+                    itemG = new GenericRepository<G>(repositoryContext);
                 return itemG;
             }
         }
@@ -591,19 +590,19 @@ namespace Repository
             get
             {
                 if (itemH == null)
-                    itemH = new GenericRepository<H>(GestionCommercialContext);
+                    itemH = new GenericRepository<H>(repositoryContext);
                 return itemH;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
         }
     }
 
@@ -611,7 +610,7 @@ namespace Repository
         IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I> where A : class
         where B : class where C : class where D : class where E : class where F : class where G : class where H : class where I : class
     {
-        private readonly GestionCommercialContext GestionCommercialContext;
+        private readonly RepositoryContext repositoryContext;
 
         private IGenericRepository<A, B, C, D, E, F, G, H, I> item;
         public IGenericRepository<A, B, C, D, E, F, G, H, I> Item
@@ -619,7 +618,7 @@ namespace Repository
             get
             {
                 if (item == null)
-                    item = new GenericRepository<A, B, C, D, E, F, G, H, I>(GestionCommercialContext);
+                    item = new GenericRepository<A, B, C, D, E, F, G, H, I>(repositoryContext);
                 return item;
             }
         }
@@ -630,7 +629,7 @@ namespace Repository
             get
             {
                 if (itemA == null)
-                    itemA = new GenericRepository<A>(GestionCommercialContext);
+                    itemA = new GenericRepository<A>(repositoryContext);
                 return itemA;
             }
         }
@@ -641,7 +640,7 @@ namespace Repository
             get
             {
                 if (itemB == null)
-                    itemB = new GenericRepository<B>(GestionCommercialContext);
+                    itemB = new GenericRepository<B>(repositoryContext);
                 return itemB;
             }
         }
@@ -652,7 +651,7 @@ namespace Repository
             get
             {
                 if (itemC == null)
-                    itemC = new GenericRepository<C>(GestionCommercialContext);
+                    itemC = new GenericRepository<C>(repositoryContext);
                 return itemC;
             }
         }
@@ -663,7 +662,7 @@ namespace Repository
             get
             {
                 if (itemD == null)
-                    itemD = new GenericRepository<D>(GestionCommercialContext);
+                    itemD = new GenericRepository<D>(repositoryContext);
                 return itemD;
             }
         }
@@ -674,7 +673,7 @@ namespace Repository
             get
             {
                 if (itemE == null)
-                    itemE = new GenericRepository<E>(GestionCommercialContext);
+                    itemE = new GenericRepository<E>(repositoryContext);
                 return itemE;
             }
         }
@@ -685,7 +684,7 @@ namespace Repository
             get
             {
                 if (itemF == null)
-                    itemF = new GenericRepository<F>(GestionCommercialContext);
+                    itemF = new GenericRepository<F>(repositoryContext);
                 return itemF;
             }
         }
@@ -696,7 +695,7 @@ namespace Repository
             get
             {
                 if (itemG == null)
-                    itemG = new GenericRepository<G>(GestionCommercialContext);
+                    itemG = new GenericRepository<G>(repositoryContext);
                 return itemG;
             }
         }
@@ -707,7 +706,7 @@ namespace Repository
             get
             {
                 if (itemH == null)
-                    itemH = new GenericRepository<H>(GestionCommercialContext);
+                    itemH = new GenericRepository<H>(repositoryContext);
                 return itemH;
             }
         }
@@ -718,19 +717,307 @@ namespace Repository
             get
             {
                 if (itemI == null)
-                    itemI = new GenericRepository<I>(GestionCommercialContext);
+                    itemI = new GenericRepository<I>(repositoryContext);
                 return itemI;
             }
         }
 
-        public GenericRepositoryWrapper(GestionCommercialContext GestionCommercialContext)
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
         {
-            this.GestionCommercialContext = GestionCommercialContext;
+            this.repositoryContext = repositoryContext;
         }
 
         public async Task SaveAsync()
         {
-            await GestionCommercialContext.SaveChangesAsync();
+            await repositoryContext.SaveChangesAsync();
+        }
+    }
+
+    public class GenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K> :
+        IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K> where A : class
+        where B : class where C : class where D : class where E : class where F : class where G : class where H : class where I : class where K : class
+    {
+        private readonly RepositoryContext repositoryContext;
+
+        private IGenericRepository<A, B, C, D, E, F, G, H, I, K> item;
+        public IGenericRepository<A, B, C, D, E, F, G, H, I, K> Item
+        {
+            get
+            {
+                if (item == null)
+                    item = new GenericRepository<A, B, C, D, E, F, G, H, I, K>(repositoryContext);
+                return item;
+            }
+        }
+
+        private IGenericRepository<A> itemA;
+        public IGenericRepository<A> ItemA
+        {
+            get
+            {
+                if (itemA == null)
+                    itemA = new GenericRepository<A>(repositoryContext);
+                return itemA;
+            }
+        }
+
+        private IGenericRepository<B> itemB;
+        public IGenericRepository<B> ItemB
+        {
+            get
+            {
+                if (itemB == null)
+                    itemB = new GenericRepository<B>(repositoryContext);
+                return itemB;
+            }
+        }
+
+        private IGenericRepository<C> itemC;
+        public IGenericRepository<C> ItemC
+        {
+            get
+            {
+                if (itemC == null)
+                    itemC = new GenericRepository<C>(repositoryContext);
+                return itemC;
+            }
+        }
+
+        private IGenericRepository<D> itemD;
+        public IGenericRepository<D> ItemD
+        {
+            get
+            {
+                if (itemD == null)
+                    itemD = new GenericRepository<D>(repositoryContext);
+                return itemD;
+            }
+        }
+
+        private IGenericRepository<E> itemE;
+        public IGenericRepository<E> ItemE
+        {
+            get
+            {
+                if (itemE == null)
+                    itemE = new GenericRepository<E>(repositoryContext);
+                return itemE;
+            }
+        }
+
+        private IGenericRepository<F> itemF;
+        public IGenericRepository<F> ItemF
+        {
+            get
+            {
+                if (itemF == null)
+                    itemF = new GenericRepository<F>(repositoryContext);
+                return itemF;
+            }
+        }
+
+        private IGenericRepository<G> itemG;
+        public IGenericRepository<G> ItemG
+        {
+            get
+            {
+                if (itemG == null)
+                    itemG = new GenericRepository<G>(repositoryContext);
+                return itemG;
+            }
+        }
+
+        private IGenericRepository<H> itemH;
+        public IGenericRepository<H> ItemH
+        {
+            get
+            {
+                if (itemH == null)
+                    itemH = new GenericRepository<H>(repositoryContext);
+                return itemH;
+            }
+        }
+
+        private IGenericRepository<I> itemI;
+        public IGenericRepository<I> ItemI
+        {
+            get
+            {
+                if (itemI == null)
+                    itemI = new GenericRepository<I>(repositoryContext);
+                return itemI;
+            }
+        }
+
+        private IGenericRepository<K> itemK;
+        public IGenericRepository<K> ItemK
+        {
+            get
+            {
+                if (itemK == null)
+                    itemK = new GenericRepository<K>(repositoryContext);
+                return itemK;
+            }
+        }
+
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
+        {
+            this.repositoryContext = repositoryContext;
+        }
+
+        public async Task SaveAsync()
+        {
+            await repositoryContext.SaveChangesAsync();
+        }
+    }
+
+    public class GenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K, L> :
+        IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K, L> where A : class
+        where B : class where C : class where D : class where E : class where F : class 
+        where G : class where H : class where I : class where K : class where L : class
+    {
+        private readonly RepositoryContext repositoryContext;
+
+        private IGenericRepository<A, B, C, D, E, F, G, H, I, K, L> item;
+        public IGenericRepository<A, B, C, D, E, F, G, H, I, K, L> Item
+        {
+            get
+            {
+                if (item == null)
+                    item = new GenericRepository<A, B, C, D, E, F, G, H, I, K, L>(repositoryContext);
+                return item;
+            }
+        }
+
+        private IGenericRepository<A> itemA;
+        public IGenericRepository<A> ItemA
+        {
+            get
+            {
+                if (itemA == null)
+                    itemA = new GenericRepository<A>(repositoryContext);
+                return itemA;
+            }
+        }
+
+        private IGenericRepository<B> itemB;
+        public IGenericRepository<B> ItemB
+        {
+            get
+            {
+                if (itemB == null)
+                    itemB = new GenericRepository<B>(repositoryContext);
+                return itemB;
+            }
+        }
+
+        private IGenericRepository<C> itemC;
+        public IGenericRepository<C> ItemC
+        {
+            get
+            {
+                if (itemC == null)
+                    itemC = new GenericRepository<C>(repositoryContext);
+                return itemC;
+            }
+        }
+
+        private IGenericRepository<D> itemD;
+        public IGenericRepository<D> ItemD
+        {
+            get
+            {
+                if (itemD == null)
+                    itemD = new GenericRepository<D>(repositoryContext);
+                return itemD;
+            }
+        }
+
+        private IGenericRepository<E> itemE;
+        public IGenericRepository<E> ItemE
+        {
+            get
+            {
+                if (itemE == null)
+                    itemE = new GenericRepository<E>(repositoryContext);
+                return itemE;
+            }
+        }
+
+        private IGenericRepository<F> itemF;
+        public IGenericRepository<F> ItemF
+        {
+            get
+            {
+                if (itemF == null)
+                    itemF = new GenericRepository<F>(repositoryContext);
+                return itemF;
+            }
+        }
+
+        private IGenericRepository<G> itemG;
+        public IGenericRepository<G> ItemG
+        {
+            get
+            {
+                if (itemG == null)
+                    itemG = new GenericRepository<G>(repositoryContext);
+                return itemG;
+            }
+        }
+
+        private IGenericRepository<H> itemH;
+        public IGenericRepository<H> ItemH
+        {
+            get
+            {
+                if (itemH == null)
+                    itemH = new GenericRepository<H>(repositoryContext);
+                return itemH;
+            }
+        }
+
+        private IGenericRepository<I> itemI;
+        public IGenericRepository<I> ItemI
+        {
+            get
+            {
+                if (itemI == null)
+                    itemI = new GenericRepository<I>(repositoryContext);
+                return itemI;
+            }
+        }
+
+        private IGenericRepository<K> itemK;
+        public IGenericRepository<K> ItemK
+        {
+            get
+            {
+                if (itemK == null)
+                    itemK = new GenericRepository<K>(repositoryContext);
+                return itemK;
+            }
+        }
+
+        private IGenericRepository<L> itemL;
+        public IGenericRepository<L> ItemL
+        {
+            get
+            {
+                if (itemL == null)
+                    itemL = new GenericRepository<L>(repositoryContext);
+                return itemL;
+            }
+        }
+
+        public GenericRepositoryWrapper(RepositoryContext repositoryContext)
+        {
+            this.repositoryContext = repositoryContext;
+        }
+
+        public async Task SaveAsync()
+        {
+            await repositoryContext.SaveChangesAsync();
         }
     }
 }

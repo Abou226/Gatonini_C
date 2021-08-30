@@ -111,4 +111,44 @@ namespace Contracts
         IGenericRepository<I> ItemI { get; }
         Task SaveAsync();
     }
+
+    public interface IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K>
+    {
+        IGenericRepository<A, B, C, D, E, F, G, H, I, K> Item { get; }
+        IGenericRepository<A> ItemA { get; }
+        IGenericRepository<B> ItemB { get; }
+        IGenericRepository<C> ItemC { get; }
+        IGenericRepository<D> ItemD { get; }
+        IGenericRepository<E> ItemE { get; }
+        IGenericRepository<F> ItemF { get; }
+        IGenericRepository<G> ItemG { get; }
+
+        IGenericRepository<H> ItemH { get; }
+
+        IGenericRepository<I> ItemI { get; }
+
+        IGenericRepository<K> ItemK { get; }
+        Task SaveAsync();
+    }
+
+    public interface IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K, L>
+    {
+        IGenericRepository<A, B, C, D, E, F, G, H, I, K, L> Item { get; }
+        IGenericRepository<A> ItemA { get; }
+        IGenericRepository<B> ItemB { get; }
+        IGenericRepository<C> ItemC { get; }
+        IGenericRepository<D> ItemD { get; }
+        IGenericRepository<E> ItemE { get; }
+        IGenericRepository<F> ItemF { get; }
+        IGenericRepository<G> ItemG { get; }
+
+        IGenericRepository<H> ItemH { get; }
+
+        IGenericRepository<I> ItemI { get; }
+
+        IGenericRepository<K> ItemK { get; }
+
+        IGenericRepository<L> ItemL { get; }
+        Task SaveAsync();
+    }
 }

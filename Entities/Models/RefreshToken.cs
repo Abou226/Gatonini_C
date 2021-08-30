@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-
-#nullable disable
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public partial class RefreshToken
+    [Table("RefreshToken")]
+    public class RefreshToken
     {
-        public Guid RefreshTokenId { get; set; }
+        public Guid Id { get; set; }
+        [Required(ErrorMessage = "Le token est requis")]
         public string Token { get; set; }
-        public DateTime DateOfExpiry { get; set; }
-        public DateTime DateOfIssue { get; set; }
-        public string Refreshable { get; set; }
-        public int? UserId { get; set; }
-        public DateTime ServerTime { get; set; }
         public DateTime DateOfCreation { get; set; }
-        public int? AuteurId { get; set; }
+        public DateTime DateOfIssue { get; set; }
+        public DateTime DateOfExpiry { get; set; }
+        public Guid? UserId { get; set; }
 
-        public virtual TblUser Auteur { get; set; }
-        public virtual TblUser User { get; set; }
+        [Required(ErrorMessage ="Refreshable est requis")]
+        [StringLength(60, ErrorMessage = "La taille de refreshable ne peut dépasser 60 characters")]
+        public string Refreshable { get; set; }
     }
 }

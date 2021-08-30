@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
@@ -11,18 +12,19 @@ using System.Threading.Tasks;
 
 namespace Gatonini.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class StylesController : GenericController<Style, TblUser>
+    public class StylesController : GenericController<Style, User>
     {
-        private readonly IGenericRepositoryWrapper<Style, TblUser> repositoryWrapper;
-        public StylesController(IGenericRepositoryWrapper<Style, TblUser> wrapper) : base(wrapper)
+        private readonly IGenericRepositoryWrapper<Style, User> repositoryWrapper;
+        public StylesController(IGenericRepositoryWrapper<Style, User> wrapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Style>> Delete([FromRoute] Guid id)
+        public override async Task<ActionResult<Style>> Delete([FromRoute] Guid id)
         {
             try
             {
@@ -41,7 +43,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, "Suppression impossible");
             }
         }
 
@@ -62,7 +64,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur de serveur");
             }
         }
 
@@ -84,7 +86,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur de serveur");
             }
         }
 
@@ -105,7 +107,10 @@ namespace Gatonini.Server.Controllers
                     value.UserId = identity.First().Id;
                     if (value.DateOfCreation == Convert.ToDateTime("0001-01-01T00:00:00"))
                         value.DateOfCreation = DateTime.Now;
-
+                    if (value.Url == null)
+                        value.Url = value.Name;
+                    if (value.Description == null)
+                        value.Description = value.Name;
                     value.ServerTime = DateTime.Now;
                     await repositoryWrapper.ItemA.AddAsync(value);
                     await repositoryWrapper.SaveAsync();
@@ -116,7 +121,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur Serveur");
             }
         }
 
@@ -139,7 +144,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur serveur");
             }
         }
     }

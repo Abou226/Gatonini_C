@@ -1,25 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-
-#nullable disable
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    public partial class Marque
+    [Table("Marque")]
+    public class Marque
     {
-        public Marque()
-        {
-            Gammes = new HashSet<Gamme>();
-        }
-
+        [Key]
         public Guid MarqueId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public DateTime DateOfCreation { get; set; }
-        public int? UserId { get; set; }
-        public string Url { get; set; }
-        public DateTime ServerTime { get; set; }
 
-        public virtual ICollection<Gamme> Gammes { get; set; }
+        [Required(ErrorMessage = "Le nom est requis")]
+        [StringLength(60, ErrorMessage = "La taille de l'url ne peut dépasser 60 characters")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "La date de creation est requise")]
+        public DateTime DateOfCreation { get; set; }
+
+        [StringLength(400, ErrorMessage = "La taille de l'url ne peut dépasser 400 characters")]
+        public string Url { get; set; }
+        [StringLength(100, ErrorMessage = "La taille de l'url ne peut dépasser 100 characters")]
+        public string Description { get; set; }
+        [Required(ErrorMessage = "La date du server est requise")]
+        public DateTime ServerTime { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

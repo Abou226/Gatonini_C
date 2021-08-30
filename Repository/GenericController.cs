@@ -28,7 +28,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -77,7 +77,7 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] Guid id)
         {
             return null;
         }
@@ -100,7 +100,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -139,15 +139,15 @@ namespace Repository
                 await repositoryWrapper.SaveAsync();
                 return Ok(value);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur enregistrement");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
         {
             return null;
         }
@@ -171,7 +171,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -218,7 +218,7 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] Guid id)
         {
             return null;
         }
@@ -242,7 +242,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -290,7 +290,7 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] Guid id)
         {
             return null;
         }
@@ -314,7 +314,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -363,7 +363,7 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] Guid id)
         {
             return null;
         }
@@ -387,7 +387,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -434,7 +434,7 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] Guid id)
         {
             return null;
         }
@@ -458,7 +458,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -505,7 +505,7 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value,  [FromHeader] Guid id)
         {
             return null;
         }
@@ -529,7 +529,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -576,7 +576,7 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
         {
             return null;
         }
@@ -600,7 +600,7 @@ namespace Repository
 
         [HttpDelete]
         [Authorize]
-        public virtual Task<ActionResult<A>> Delete([FromBody] int id)
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
         {
             return null;
         }
@@ -647,7 +647,149 @@ namespace Repository
 
         [HttpPatch]
         [Authorize]
-        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] int id)
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
+        {
+            return null;
+        }
+    }
+
+    public class GenericController<A, B, C, D, E, F, G, H, I, K> : ControllerBase,
+       IGenericController<A, B, C, D, E, F, G, H, I, K> where A : class where B : class
+       where C : class where D : class where E : class where F : class where G : class where H : class where I : class where K : class
+    {
+        private readonly IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K> repositoryWrapper;
+        public GenericController(IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K> wrapper)
+        {
+            repositoryWrapper = wrapper;
+        }
+
+        [HttpPost]
+        public virtual Task<ActionResult<A>> AddAsync([FromBody] A value)
+        {
+            return null;
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
+        {
+            return null;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public virtual Task<ActionResult<IEnumerable<A>>> GetAll()
+        {
+            return null;
+        }
+
+        [HttpGet("{search}")]
+        [Authorize]
+        public virtual Task<ActionResult<IEnumerable<A>>> GetBy(string search)
+        {
+            return null;
+        }
+
+        [HttpGet("{search}/{start:DateTime}/{end:DateTime}")]
+        [Authorize]
+        public virtual Task<ActionResult<IEnumerable<A>>> GetBy(string search, DateTime start, DateTime end)
+        {
+            return null;
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<ActionResult<A>> UpdateAsync([FromBody] A value)
+        {
+            try
+            {
+                if (value == null)
+                    BadRequest();
+
+                repositoryWrapper.ItemA.Update(value);
+                await repositoryWrapper.SaveAsync();
+                return Ok(value);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPatch]
+        [Authorize]
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
+        {
+            return null;
+        }
+    }
+
+    public class GenericController<A, B, C, D, E, F, G, H, I, K, L> : ControllerBase,
+       IGenericController<A, B, C, D, E, F, G, H, I, K, L> where A : class where B : class
+       where C : class where D : class where E : class where F : class where G : class where H : class where I : class where K : class where L : class
+    {
+        private readonly IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K, L> repositoryWrapper;
+        public GenericController(IGenericRepositoryWrapper<A, B, C, D, E, F, G, H, I, K, L> wrapper)
+        {
+            repositoryWrapper = wrapper;
+        }
+
+        [HttpPost]
+        public virtual Task<ActionResult<A>> AddAsync([FromBody] A value)
+        {
+            return null;
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public virtual Task<ActionResult<A>> Delete([FromBody] Guid id)
+        {
+            return null;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public virtual Task<ActionResult<IEnumerable<A>>> GetAll()
+        {
+            return null;
+        }
+
+        [HttpGet("{search}")]
+        [Authorize]
+        public virtual Task<ActionResult<IEnumerable<A>>> GetBy(string search)
+        {
+            return null;
+        }
+
+        [HttpGet("{search}/{start:DateTime}/{end:DateTime}")]
+        [Authorize]
+        public virtual Task<ActionResult<IEnumerable<A>>> GetBy(string search, DateTime start, DateTime end)
+        {
+            return null;
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<ActionResult<A>> UpdateAsync([FromBody] A value)
+        {
+            try
+            {
+                if (value == null)
+                    BadRequest();
+
+                repositoryWrapper.ItemA.Update(value);
+                await repositoryWrapper.SaveAsync();
+                return Ok(value);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPatch]
+        [Authorize]
+        public virtual Task<ActionResult<A>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
         {
             return null;
         }

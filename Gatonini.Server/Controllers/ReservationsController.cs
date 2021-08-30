@@ -1,9 +1,7 @@
-﻿
-using Contracts;
+﻿using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using System;
@@ -17,16 +15,16 @@ namespace Gatonini.Server.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationsController : GenericController<Reservation, TblUser>
+    public class ReservationsController : GenericController<Reservation, User, Gamme, Marque, Style, Categorie>
     {
-        private readonly IGenericRepositoryWrapper<Reservation, TblUser> repositoryWrapper;
-        public ReservationsController(IGenericRepositoryWrapper<Reservation, TblUser> wrapper) : base(wrapper)
+        private readonly IGenericRepositoryWrapper<Reservation, User, Gamme, Marque, Style, Categorie> repositoryWrapper;
+        public ReservationsController(IGenericRepositoryWrapper<Reservation, User, Gamme, Marque, Style, Categorie> wrapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
         }
 
         [HttpDelete("{id}")]
-        public override async Task<ActionResult<Reservation>> Delete([FromRoute] int id)
+        public  async Task<ActionResult<Reservation>> Delete([FromRoute] int id)
         {
             try
             {
@@ -45,28 +43,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        public override async Task<ActionResult<Reservation>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] int id)
-        {
-            try
-            {
-                var item = await repositoryWrapper.Item.GetBy(x => x.Reference == id);
-                if (item.Count() != 0)
-                {
-                    var single = item.First();
-                    value.ApplyTo(single);
-                    await repositoryWrapper.SaveAsync();
-                }
-                else return NotFound("User not indentified");
-
-                return Ok(value);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }
         }
 
@@ -79,7 +56,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetAll();
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Gamme, x => x.Gamme.Marque, x => x.Gamme.Style, x => x.Gamme.Categorie);
 
                     return Ok(result);
                 }
@@ -91,27 +68,6 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        [HttpGet("{userid:Guid}")]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetAllForUser(int userid)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy( x => x.Reference == userid);
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
 
         public override async Task<ActionResult<IEnumerable<Reservation>>> GetBy(string search)
         {
@@ -122,35 +78,8 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Client.ToString().Contains(search) 
-                    || x.AdresseLivraison.Contains(search) || x.FormeGateau.Contains(search) || x.Garnissage.Contains(search) 
-                    || x.Gateau.Contains(search) || x.Reference.ToString().Equals(search)
-                    || x.HeureLivraison.Contains(search) || x.MentionSurGateau.Contains(search) 
-                    || x.Description.Contains(search) || x.ContactLivraison.Contains(search));
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("{start:DateTime}/{end:DateTime}")]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<Reservation>>> GetByInclude(DateTime start, DateTime end)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Date.Value.Date <= end
-                    && x.Date.Value.Date >= start);
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Description.Contains(search)
+                    || x.Gamme.Categorie.Name.Contains(search) || x.Gamme.Marque.Name.Contains(search) || x.Gamme.Style.Name.Contains(search), x => x.Gamme, x => x.Gamme.Marque, x => x.Gamme.Style, x => x.Gamme.Categorie);
 
                     return Ok(result);
                 }
@@ -175,13 +104,12 @@ namespace Gatonini.Server.Controllers
 
                 if (identity.Count() != 0)
                 {
-                    var reser = await repositoryWrapper.Item.GetLast(x => x.Reference != 0);
+                    value.GammeId = Guid.NewGuid();
+                    //value.UserId = identity.First().Id;
+                    //if (value.DateOfCreation == Convert.ToDateTime("0001-01-01T00:00:00"))
+                    //    value.DateOfCreation = DateTime.Now;
 
-                    value.Reference = reser.Reference+1;
-                    if (value.Date == Convert.ToDateTime("0001-01-01T00:00:00"))
-                        value.Date = DateTime.Now;
-
-
+                    //value.ServerTime = DateTime.Now;
                     await repositoryWrapper.ItemA.AddAsync(value);
                     await repositoryWrapper.SaveAsync();
                 }
@@ -205,13 +133,33 @@ namespace Gatonini.Server.Controllers
 
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetBy(
-                        x => x.Client.ToString().Contains(search)
-                    || x.Num2Client.Contains(search)
-                    || x.AdresseLivraison.Contains(search)
-                    || x.HeureLivraison.Contains(search) &&
-                    (x.Date.Value.Date <= end
-                    && x.Date.Value.Date >= start));
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Description.Contains(search)
+                    || x.Gamme.Categorie.Name.Contains(search) || x.Gamme.Marque.Name.Contains(search) || x.Gamme.Style.Name.Contains(search) &&
+                    (x.Date.Value >= start && x.Date.Value <= end), x => x.Gamme, x => x.Gamme.Marque, x => x.Gamme.Style, x => x.Gamme.Categorie);
+
+                    return Ok(result);
+                }
+                else return NotFound("User not indentified");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpGet("{start:DateTime}/{end:DateTime}")]
+        public async Task<ActionResult<IEnumerable<Reservation>>> GetBy(DateTime start, DateTime end)
+        {
+            try
+            {
+                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
+                Equals(claim));
+
+                if (identity.Count() != 0)
+                {
+                    var result = await repositoryWrapper.Item.GetBy(x => x.Date.Value.Date >= start && x.Date.Value.Date <= end);
 
                     return Ok(result);
                 }

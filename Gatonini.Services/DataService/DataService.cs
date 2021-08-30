@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -270,8 +271,6 @@ namespace Gatonini.Services
                 return null;
             }
         }
-
-
 
         public virtual async Task<T> DeleteAsync(string token, T value = null, string url = null)
         {

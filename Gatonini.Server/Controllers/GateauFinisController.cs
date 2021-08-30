@@ -13,19 +13,19 @@ using System.Threading.Tasks;
 
 namespace Gatonini.Server.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class GateauFinisController : GenericController<TblStockGateau, TblUser>
+    [Authorize]
+    public class GateauFinisController : GenericController<GateauFini, User, Gamme, Marque, Style, Categorie, Model, Taille, Stock_Produit>
     {
-        private readonly IGenericRepositoryWrapper<TblStockGateau, TblUser> repositoryWrapper;
-        public GateauFinisController(IGenericRepositoryWrapper<TblStockGateau, TblUser> wrapper) : base(wrapper)
+        private readonly IGenericRepositoryWrapper<GateauFini, User, Gamme, Marque, Style, Categorie, Model, Taille, Stock_Produit> repositoryWrapper;
+        public GateauFinisController(IGenericRepositoryWrapper<GateauFini, User, Gamme, Marque, Style, Categorie, Model, Taille, Stock_Produit> wrapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
         }
 
         [HttpDelete("{id}")]
-        public override async Task<ActionResult<TblStockGateau>> Delete([FromRoute] int id)
+        public override async Task<ActionResult<GateauFini>> Delete([FromRoute] Guid id)
         {
             try
             {
@@ -34,7 +34,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    TblStockGateau u = new TblStockGateau();
+                    GateauFini u = new GateauFini();
                     u.Id = id;
                     repositoryWrapper.Item.Delete(u);
                     await repositoryWrapper.SaveAsync();
@@ -44,32 +44,11 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }
         }
 
-        public override async Task<ActionResult<TblStockGateau>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] int id)
-        {
-            try
-            {
-                var item = await repositoryWrapper.Item.GetBy(x => x.Id == id);
-                if (item.Count() != 0)
-                {
-                    var single = item.First();
-                    value.ApplyTo(single);
-                    await repositoryWrapper.SaveAsync();
-                }
-                else return NotFound("User not indentified");
-
-                return Ok(value);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        public override async Task<ActionResult<IEnumerable<TblStockGateau>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<GateauFini>>> GetAll()
         {
             try
             {
@@ -78,7 +57,8 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetAll();
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Produit.Gamme, x => x.Produit.Gamme.Marque,
+                        x => x.Produit.Gamme.Style, x => x.Produit.Gamme.Categorie, x => x.Produit.Model, x => x.Produit.Taille);
 
                     return Ok(result);
                 }
@@ -90,8 +70,8 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        [HttpGet("{userid:Guid}")]
-        public async Task<ActionResult<IEnumerable<TblStockGateau>>> GetAllForUser(int userid)
+
+        public override async Task<ActionResult<IEnumerable<GateauFini>>> GetBy(string search)
         {
             try
             {
@@ -100,7 +80,12 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Id == userid);
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Produit.Gamme.Description.Contains(search)
+                    || x.Produit.Gamme.Categorie.Name.Contains(search) || x.Produit.Gamme.Marque.Name.Contains(search)
+                    || x.Produit.Gamme.Style.Name.Contains(search), x => x.Produit.Gamme,
+                    x => x.Produit.Gamme.Marque, x => x.Produit.Gamme.Style,
+                    x => x.Produit.Gamme.Categorie, x => x.Produit.Model,
+                    x => x.Produit.Taille);
 
                     return Ok(result);
                 }
@@ -108,56 +93,11 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur de serveur");
             }
         }
 
-        public override async Task<ActionResult<IEnumerable<TblStockGateau>>> GetBy(string search)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.CodeBarre.Contains(search) || x.Detachement.Contains(search)
-                    || x.Forme.Contains(search) || x.NbPart.Contains(search) || x.Gateau.Contains(search) && x.Quantité >=0);
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("{start:DateTime}/{end:DateTime}")]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<TblStockGateau>>> GetByInclude(DateTime start, DateTime end)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetAll();
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        public override async Task<ActionResult<TblStockGateau>> AddAsync([FromBody] TblStockGateau value)
+        public override async Task<ActionResult<GateauFini>> AddAsync([FromBody] GateauFini value)
         {
             try
             {
@@ -170,15 +110,35 @@ namespace Gatonini.Server.Controllers
 
                 if (identity.Count() != 0)
                 {
-                    var reser = await repositoryWrapper.Item.GetLast(x => x.Id != 0);
+                    value.Id = Guid.NewGuid();
+                    value.UserId = identity.First().Id;
+                    if (value.Date == Convert.ToDateTime("0001-01-01T00:00:00"))
+                        value.Date = DateTime.Now;
 
-                    value.Id = reser.Id + 1;
-                    //if (value == Convert.ToDateTime("0001-01-01T00:00:00"))
-                    //    value.DateAjout = DateTime.Now;
-
-
+                    //value.ServerTime = DateTime.Now;
                     await repositoryWrapper.ItemA.AddAsync(value);
                     await repositoryWrapper.SaveAsync();
+                    var prd = await repositoryWrapper.ItemI.GetBy(x => x.ProduitId == value.ProduitId);
+                    if(prd.Count() != 0)
+                    {
+                        var sp = prd.First().Quantité += value.Quantité;
+                        JsonPatchDocument edit = new JsonPatchDocument();
+                        edit.Add("path", "Quantité");
+                        edit.Add("op", "Replace");
+                        edit.Add("value", sp);
+                        edit.ApplyTo(prd);
+                        await repositoryWrapper.SaveAsync();
+                    }else
+                    {
+                        var res = await repositoryWrapper.ItemI.AddAsync(new Stock_Produit()
+                        {
+                            Id = Guid.NewGuid(),
+                            ProduitId = value.ProduitId,
+                            FilialeId = value.FilialeId,
+                            Quantité = value.Quantité,
+                        });
+                        await repositoryWrapper.SaveAsync();
+                    }
                 }
                 else return NotFound("User not indentified");
 
@@ -190,7 +150,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        public override async Task<ActionResult<IEnumerable<TblStockGateau>>> GetBy(string search, DateTime start, DateTime end)
+        public override async Task<ActionResult<IEnumerable<GateauFini>>> GetBy(string search, DateTime start, DateTime end)
         {
             try
             {
@@ -200,12 +160,9 @@ namespace Gatonini.Server.Controllers
 
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetBy(
-                        x => x.Gateau.ToString().Contains(search)
-                    || x.CodeBarre.Contains(search)
-                    || x.Detachement.Contains(search)
-                    || x.Forme.Contains(search)
-                    || x.NbPart.Contains(search));
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Produit.Gamme.Description.Contains(search)
+                    || x.Produit.Gamme.Categorie.Name.Contains(search) || x.Produit.Gamme.Marque.Name.Contains(search) || x.Produit.Gamme.Style.Name.Contains(search) &&
+                    (x.Date >= start && x.Date <= end), x => x.Produit.Gamme, x => x.Produit.Gamme.Marque, x => x.Produit.Gamme.Style, x => x.Produit.Gamme.Categorie, x => x.Produit.Model, x => x.Produit.Taille);
 
                     return Ok(result);
                 }
@@ -218,5 +175,3 @@ namespace Gatonini.Server.Controllers
         }
     }
 }
-
-

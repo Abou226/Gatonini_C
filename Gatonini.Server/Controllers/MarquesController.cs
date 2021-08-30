@@ -2,7 +2,6 @@
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using System;
@@ -16,16 +15,18 @@ namespace Gatonini.Server.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class MarquesController : GenericController<Marque, TblUser>
+    public class MarquesController : GenericController<Marque, User>
     {
-        private readonly IGenericRepositoryWrapper<Marque, TblUser> repositoryWrapper;
-        public MarquesController(IGenericRepositoryWrapper<Marque, TblUser> wrapper) : base(wrapper)
+        private readonly IGenericRepositoryWrapper<Marque, User> repositoryWrapper;
+        private readonly IGenericRepositoryWrapper<GrosGateau> _grosgateau;
+        public MarquesController(IGenericRepositoryWrapper<Marque, User> wrapper, IGenericRepositoryWrapper<GrosGateau> grosgateau) : base(wrapper)
         {
             repositoryWrapper = wrapper;
+            _grosgateau = grosgateau;
         }
 
         [HttpDelete("{id}")]
-        public  async Task<ActionResult<TblUser>> Delete([FromRoute] Guid id)
+        public override async Task<ActionResult<Marque>> Delete([FromRoute] Guid id)
         {
             try
             {
@@ -44,9 +45,10 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }
         }
+
         public override async Task<ActionResult<IEnumerable<Marque>>> GetAll()
         {
             try
@@ -56,33 +58,11 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.ItemA.GetAll();
+                    var result = await repositoryWrapper.Item.GetAll();
 
                     return Ok(result);
                 }
                 else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpPatch("{id:Guid}")]
-        public async Task<ActionResult<Marque>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromRoute] Guid id)
-        {
-            try
-            {
-                var item = await repositoryWrapper.Item.GetBy(x => x.MarqueId == id);
-                if (item.Count() != 0)
-                {
-                    var single = item.FirstOrDefault();
-                    value.ApplyTo(single);
-                    await repositoryWrapper.SaveAsync();
-                }
-                else return NotFound("User not indentified");
-
-                return Ok(value);
             }
             catch (Exception ex)
             {
@@ -111,7 +91,6 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        [Authorize]
         public override async Task<ActionResult<Marque>> AddAsync([FromBody] Marque value)
         {
             try
@@ -137,6 +116,42 @@ namespace Gatonini.Server.Controllers
                 else return NotFound("User not indentified");
 
                 return Ok(value);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("Refresh")]
+        public async Task<ActionResult<IEnumerable<GrosGateau>>> RefreshAndUpdateAsync()
+        {
+            try
+            {
+                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
+                Equals(claim));
+
+                if (identity.Count() != 0)
+                {
+                    var result = await _grosgateau.Item.GetAll();
+                    foreach (var item in result)
+                    {
+                        await repositoryWrapper.Item.AddAsync(new Marque()
+                        {
+                            UserId = identity.First().Id,
+                            Name = item.Nom,
+                            DateOfCreation = DateTime.Now,
+                            ServerTime = DateTime.Now,
+                            MarqueId = Guid.NewGuid(),
+                            Url = item.Nom,
+                        });
+                        await repositoryWrapper.SaveAsync();
+                    }
+
+                    return Ok(result);
+                }
+                else return NotFound("User not indentified");
             }
             catch (Exception ex)
             {

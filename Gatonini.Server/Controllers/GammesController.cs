@@ -2,7 +2,6 @@
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using System;
@@ -13,19 +12,19 @@ using System.Threading.Tasks;
 
 namespace Gatonini.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class GammesController : GenericController<Gamme, TblUser, Marque, Style, Categorie>
+    public class GammesController : GenericController<Gamme, User, Marque, Style, Categorie>
     {
-        private readonly IGenericRepositoryWrapper<Gamme, TblUser, Marque, Style, Categorie> repositoryWrapper;
-        public GammesController(IGenericRepositoryWrapper<Gamme, TblUser, Marque, Style, Categorie> wrapper) : base(wrapper)
+        private readonly IGenericRepositoryWrapper<Gamme, User, Marque, Style, Categorie> repositoryWrapper;
+        public GammesController(IGenericRepositoryWrapper<Gamme, User, Marque, Style, Categorie> wrapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
         }
 
-        [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult<Gamme>> Delete([FromRoute] Guid id)
+        [HttpDelete("{id}")]
+        public override async Task<ActionResult<Gamme>> Delete([FromRoute] Guid id)
         {
             try
             {
@@ -44,7 +43,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }
         }
 
@@ -57,7 +56,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Marque, x => x.Style);
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Marque, x => x.Style, x => x.Categorie);
 
                     return Ok(result);
                 }
@@ -69,27 +68,6 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        [HttpPatch("{id:Guid}")]
-        public async Task<ActionResult<Gamme>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromRoute] Guid id)
-        {
-            try
-            {
-                var item = await repositoryWrapper.Item.GetBy(x => x.GammeId == id);
-                if (item.Count() != 0)
-                {
-                    var single = item.FirstOrDefault();
-                    value.ApplyTo(single);
-                    await repositoryWrapper.SaveAsync();
-                }
-                else return NotFound("User not indentified");
-
-                return Ok(value);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
 
         public override async Task<ActionResult<IEnumerable<Gamme>>> GetBy(string search)
         {
@@ -100,11 +78,8 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Marque, x => x.Style, x => x.Categorie, x => x.GammeId.ToString().Equals(search)
-                    || x.CategorieId.ToString().Equals(search) || x.MarqueId.ToString().Equals(search)
-                    || x.Marque.Name.Contains(search) || x.Categorie.Name.Contains(search)
-                    || x.Style.Name.Contains(search)
-                    || x.StyleId.ToString().Equals(search));
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Description.Contains(search)
+                    || x.Categorie.Name.Contains(search) || x.Marque.Name.Contains(search) || x.Style.Name.Contains(search), x => x.Marque, x => x.Style, x => x.Categorie);
 
                     return Ok(result);
                 }
@@ -112,11 +87,10 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erreur de serveur");
             }
         }
 
-        [Authorize]
         public override async Task<ActionResult<Gamme>> AddAsync([FromBody] Gamme value)
         {
             try
@@ -125,11 +99,13 @@ namespace Gatonini.Server.Controllers
                     return NotFound();
 
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().Equals(claim));
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
+                Equals(claim));
+
                 if (identity.Count() != 0)
                 {
                     value.GammeId = Guid.NewGuid();
-                    value.UserId = identity.First().Id;
+                    //value.UserId = identity.First().Id;
                     if (value.DateOfCreation == Convert.ToDateTime("0001-01-01T00:00:00"))
                         value.DateOfCreation = DateTime.Now;
 
@@ -157,67 +133,9 @@ namespace Gatonini.Server.Controllers
 
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Marque, x => x.Style, x => x.Categorie,
-                        x => x.CategorieId.ToString().Contains(search)
-                    || x.CategorieId.ToString().Equals(search) || x.MarqueId.ToString().Equals(search)
-                    || x.Marque.Name.Contains(search) || x.Categorie.Name.Contains(search)
-                    || x.StyleId.ToString().Equals(search) &&
-                    (x.DateOfCreation >= start && x.DateOfCreation <= end));
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("{categorie}/{marque}/{start:DateTime}/{end:DateTime}")]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<Gamme>>> GetByTermes(string categorie, string marque, DateTime start, DateTime end)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Marque, x => x.Style, x => x.Categorie,
-                        x =>
-                       (x.CategorieId.ToString().Contains(categorie) && x.MarqueId.ToString().Equals(marque))
-                    || (x.Marque.Name.Contains(marque) && x.Categorie.Name.Contains(categorie)) &&
-                    (x.DateOfCreation >= start && x.DateOfCreation <= end));
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet("{categorie}/{marque}")]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<Gamme>>> GetByTermes(string categorie, string marque)
-        {
-            try
-            {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
-                Equals(claim));
-
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Marque, x => x.Style, x => x.Categorie,
-                        x =>
-                       (x.CategorieId.ToString().Contains(categorie) && x.MarqueId.ToString().Equals(marque))
-                    || (x.Marque.Name.Contains(marque) && x.Categorie.Name.Contains(categorie)));
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Description.Contains(search) 
+                    || x.Categorie.Name.Contains(search) || x.Marque.Name.Contains(search) || x.Style.Name.Contains(search) &&
+                    (x.DateOfCreation >= start && x.DateOfCreation <= end), x => x.Marque, x => x.Style, x => x.Categorie);
 
                     return Ok(result);
                 }
