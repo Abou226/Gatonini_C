@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
 namespace Entities.Models
 {
+    [Table("Reservation")]
     public partial class Reservation
     {
         public int Reference { get; set; }

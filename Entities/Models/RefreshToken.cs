@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
 namespace Entities.Models
 {
+    [Table("RefreshToken")]
     public partial class RefreshToken
     {
         public Guid RefreshTokenId { get; set; }
