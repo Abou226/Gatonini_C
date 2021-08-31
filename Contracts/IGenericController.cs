@@ -104,4 +104,37 @@ namespace Contracts
         Task<ActionResult<A>> PatchUpdateAsync(JsonPatchDocument value, int id);
         Task<ActionResult<A>> Delete(int id);
     }
+
+    public interface IGenericController<A, B, C, D, E, F, G, H, I, J> where A : class where B : class where C : class where D : class where E : class where F : class where G : class where H : class where I : class where J : class
+    {
+        Task<ActionResult<IEnumerable<A>>> GetAll();
+        Task<ActionResult<IEnumerable<A>>> GetBy(string search);
+        Task<ActionResult<IEnumerable<A>>> GetBy(string search, DateTime start, DateTime end);
+        Task<ActionResult<A>> AddAsync(A value);
+        Task<ActionResult<A>> UpdateAsync(A value);
+        Task<ActionResult<A>> PatchUpdateAsync(JsonPatchDocument value, int id);
+        Task<ActionResult<A>> Delete(int id);
+    }
+
+    public interface IGenericController<A, B, C, D, E, F, G, H, I, J, K> where A : class where B : class where C : class where D : class where E : class where F : class where G : class where H : class where I : class where J : class where K : class
+    {
+        Task<ActionResult<IEnumerable<A>>> GetAll();
+        Task<ActionResult<IEnumerable<A>>> GetBy(string search);
+        Task<ActionResult<IEnumerable<A>>> GetBy(string search, DateTime start, DateTime end);
+        Task<ActionResult<A>> AddAsync(A value);
+        Task<ActionResult<A>> UpdateAsync(A value);
+        Task<ActionResult<A>> PatchUpdateAsync(JsonPatchDocument value, int id);
+        Task<ActionResult<A>> Delete(int id);
+    }
+
+    public interface IGenericController<A, B, C, D, E, F, G, H, I, J, K, L> where A : class where B : class where C : class where D : class where E : class where F : class where G : class where H : class where I : class where J : class where K : class where L : class
+    {
+        Task<ActionResult<IEnumerable<A>>> GetAll();
+        Task<ActionResult<IEnumerable<A>>> GetBy(string search);
+        Task<ActionResult<IEnumerable<A>>> GetBy(string search, DateTime start, DateTime end);
+        Task<ActionResult<A>> AddAsync(A value);
+        Task<ActionResult<A>> UpdateAsync(A value);
+        Task<ActionResult<A>> PatchUpdateAsync(JsonPatchDocument value, int id);
+        Task<ActionResult<A>> Delete(int id);
+    }
 }
