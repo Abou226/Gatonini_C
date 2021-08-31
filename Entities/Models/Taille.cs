@@ -19,7 +19,7 @@ namespace Entities.Models
         public DateTime DateOfCreation { get; set; }
         public string Description { get; set; }
         public DateTime ServerTime { get; set; }
-        public int? UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         public virtual ICollection<TblPlaningGateau> TblPlaningGateaus { get; set; }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,12 @@ namespace Entities.Models
         public Guid Id { get; set; }
         public string Prenom { get; set; }
         public string Nom { get; set; }
-        public Genre Genre { get; set; } = Genre.Femme;
+
+        [Required(ErrorMessage = "Le contact est requis")]
+        [StringLength(15, ErrorMessage ="La taille du contact est requis")]
+        public string Contact { get; set; }
+        [StringLength(15, ErrorMessage = "La taille du contact est requis")]
+        public string Contact1 { get; set; }
+    public Genre Genre { get; set; } = Genre.Femme;
     }
 }

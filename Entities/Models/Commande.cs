@@ -11,7 +11,10 @@ namespace Entities.Models
     public class Commande
     {
         public Guid Id { get; set; }
+
+        [ForeignKey(nameof(Produit))]
         public Guid? ProduitId { get; set; }
+        public Produit Produit { get; set; }
         public DateTime DateOfCreation { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Quantité { get; set; }
