@@ -23,5 +23,7 @@ namespace Entities.Models
         [ForeignKey(nameof(Model))]
         public Guid? ModelId { get; set; }
         public Model Model { get; set; }
+
+        public int MyProperty { get; set; }
     }
 }

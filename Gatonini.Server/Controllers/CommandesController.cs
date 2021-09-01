@@ -16,16 +16,16 @@ namespace Gatonini.Server.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationsController : GenericController<Commande, User, Produit, Num_Vente, Gamme, Marque, Taille, Model, Style, Quartier, Client>
+    public class ReservationsController : GenericController<Commande, User, Produit, Num_Vente, Gamme, Marque, Taille, Model, Style, Quartier, Client, Stock_Produit>
     {
-        private readonly IGenericRepositoryWrapper<Commande, User, Produit, Num_Vente, Gamme, Marque, Taille, Model, Style, Quartier, Client> repositoryWrapper;
-        public ReservationsController(IGenericRepositoryWrapper<Commande, User, Produit, Num_Vente, Gamme, Marque, Taille, Model, Style, Quartier, Client> wrapper) : base(wrapper)
+        private readonly IGenericRepositoryWrapper<Commande, User, Produit, Num_Vente, Gamme, Marque, Taille, Model, Style, Quartier, Client, Stock_Produit> repositoryWrapper;
+        public ReservationsController(IGenericRepositoryWrapper<Commande, User, Produit, Num_Vente, Gamme, Marque, Taille, Model, Style, Quartier, Client, Stock_Produit> wrapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Commande>> Delete([FromRoute] Guid id)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<Commande>> AnnuléeAsync([FromRoute] Guid id)
         {
             try
             {
@@ -34,11 +34,63 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    Commande u = new Commande();
-                    u.Id = id;
-                    repositoryWrapper.Item.Delete(u);
-                    await repositoryWrapper.SaveAsync();
-                    return Ok(u);
+                    var c = await repositoryWrapper.Item.GetBy(x => x.Id == id);
+                    if (c.Count() != 0)
+                    {
+                        var prod = await repositoryWrapper.ItemL.GetBy(x => x.Id == c.First().ProduitId);
+                        
+                        if (prod.Count() != 0)
+                        {
+                            JsonPatchDocument value = new JsonPatchDocument();
+                            value.Add("path", "Quantité");
+                            value.Add("value", prod.First().Quantité + c.First().Quantité);
+                            value.Add("op", "replace");
+                            var single = prod.First();
+                            value.ApplyTo(single);
+
+                            JsonPatchDocument values = new JsonPatchDocument();
+                            values.Add("path", "Annulée");
+                            values.Add("value", true);
+                            values.Add("op", "replace");
+                            var singles = c.First();
+                            values.ApplyTo(singles);
+                            await repositoryWrapper.SaveAsync();
+                        }
+                        return Ok(c.First());
+                    }
+                    else return NotFound("Element non trouvé");
+                }
+                else return NotFound("Utilisateur non identifier");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Commande>> DeleteAsync([FromRoute] Guid id)
+        {
+            try
+            {
+                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
+                Equals(claim));
+                if (identity.Count() != 0)
+                {
+                    var c = await repositoryWrapper.Item.GetBy(x => x.Id == id);
+                    if (c.Count() != 0)
+                    {
+                        var prod = await repositoryWrapper.ItemL.GetBy(x => x.Id == c.First().ProduitId);
+
+                        if (prod.Count() != 0)
+                        {
+                            repositoryWrapper.Item.Delete(c.First());
+                            await repositoryWrapper.SaveAsync();
+                        }
+                        return Ok(c.First());
+                    }
+                    else return NotFound("Element non trouvé");
                 }
                 else return NotFound("Utilisateur non identifier");
             }
@@ -160,7 +212,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        public async Task<ActionResult<IEnumerable<Commande>>> GetBy(string search)
+        public override async Task<ActionResult<IEnumerable<Commande>>> GetBy(string search)
         {
             try
             {
