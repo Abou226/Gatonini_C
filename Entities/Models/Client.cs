@@ -20,6 +20,6 @@ namespace Entities.Models
         public string Contact { get; set; }
         [StringLength(15, ErrorMessage = "La taille du contact est requis")]
         public string Contact1 { get; set; }
-    public Genre Genre { get; set; } = Genre.Femme;
+        public Genre Genre { get; set; } = Genre.Femme;
     }
 }

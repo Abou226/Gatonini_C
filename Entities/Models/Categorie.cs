@@ -19,7 +19,6 @@ namespace Entities.Models
         public string Url { get; set; }
         public bool Active { get; set; }
         public DateTime ServerTime { get; set; }
-        public int? UserId { get; set; }
 
         public virtual ICollection<Gamme> Gammes { get; set; }
     }

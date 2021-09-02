@@ -17,12 +17,12 @@ namespace Gatonini.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CategoriesController : GenericController<Categorie>
+    public class CategoriesController : GenericController<Categorie, User>
     {
-        private readonly IGenericRepositoryWrapper<Categorie> repositoryWrapper;
+        private readonly IGenericRepositoryWrapper<Categorie, User> repositoryWrapper;
         private readonly IConfigSettings _settings;
         private readonly IMapper _mapper;
-        public CategoriesController(IGenericRepositoryWrapper<Categorie> wrapper,
+        public CategoriesController(IGenericRepositoryWrapper<Categorie, User> wrapper,
             IConfigSettings settings, IMapper mapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
@@ -82,7 +82,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.CategorieId.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
