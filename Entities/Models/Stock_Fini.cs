@@ -18,5 +18,9 @@ namespace Entities.Models
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Quantité { get; set; }
+
+        [ForeignKey(nameof(Filiale))]
+        public Guid? FilialeId { get; set; }
+        public Filiale Filiale { get; set; }
     }
 }

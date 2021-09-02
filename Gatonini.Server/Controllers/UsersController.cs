@@ -51,7 +51,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
             }
         }
 
@@ -129,7 +129,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
             }
         }
 
@@ -166,7 +166,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
             }
         }
 
@@ -190,7 +190,7 @@ namespace Gatonini.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
             }
         }
     }

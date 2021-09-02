@@ -17,12 +17,12 @@ namespace Gatonini.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ContinentsController : GenericController<Continent>
+    public class FilialesController : GenericController<Filiale>
     {
-        private readonly IGenericRepositoryWrapper<Continent> repositoryWrapper;
+        private readonly IGenericRepositoryWrapper<Filiale> repositoryWrapper;
         private readonly IConfigSettings _settings;
         private readonly IMapper _mapper;
-        public ContinentsController(IGenericRepositoryWrapper<Continent> wrapper,
+        public FilialesController(IGenericRepositoryWrapper<Filiale> wrapper,
             IConfigSettings settings, IMapper mapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
@@ -31,7 +31,7 @@ namespace Gatonini.Server.Controllers
         }
 
         [HttpPatch("id")]
-        public async Task<ActionResult<Continent>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
+        public async Task<ActionResult<Filiale>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Gatonini.Server.Controllers
 
 
         [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult<Continent>> Delete([FromRoute] Guid id)
+        public async Task<ActionResult<Filiale>> Delete([FromRoute] Guid id)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    Continent u = new Continent();
+                    Filiale u = new Filiale();
                     u.Id = id;
                     repositoryWrapper.Item.Delete(u);
                     await repositoryWrapper.SaveAsync();
@@ -77,7 +77,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        public override async Task<ActionResult<IEnumerable<Continent>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<Filiale>>> GetAll()
         {
             try
             {
@@ -98,8 +98,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-
-        public override async Task<ActionResult<IEnumerable<Continent>>> GetBy(string search)
+        public override async Task<ActionResult<IEnumerable<Filiale>>> GetBy(string search)
         {
             try
             {
@@ -120,7 +119,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        public override async Task<ActionResult<Continent>> AddAsync([FromBody] Continent value)
+        public override async Task<ActionResult<Filiale>> AddAsync([FromBody] Filiale value)
         {
             try
             {
@@ -128,13 +127,13 @@ namespace Gatonini.Server.Controllers
                     return NotFound();
 
                 var item = await repositoryWrapper.Item.GetBy(x => x.Name == value.Name);
-                if(item.Count() == 0)
+                if (item.Count() == 0)
                 {
                     value.Id = Guid.NewGuid();
                     await repositoryWrapper.Item.AddAsync(value);
                     await repositoryWrapper.SaveAsync();
                 }
-                else  Ok("Element déjà existant");
+                else Ok("Element déjà existant");
                 return Ok(value);
             }
             catch (Exception ex)

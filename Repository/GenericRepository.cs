@@ -551,6 +551,11 @@ namespace Repository
         {
             return await RepositoryContext.Set<A>().OrderBy(descending).FirstOrDefaultAsync();
         }
+
+        public async Task<IEnumerable<A>> GetByInclude(Expression<Func<A, bool>> expression, Expression<Func<A, C>> include, Expression<Func<A, D>> include1, Expression<Func<A, E>> include2)
+        {
+            return await RepositoryContext.Set<A>().Include(include).Include(include1).Include(include2).Where(expression).ToListAsync();
+        }
     }
 
     public class GenericRepository<A, B, C, D, E, F> : IGenericRepository<A, B, C, D, E, F> 
@@ -1123,6 +1128,16 @@ namespace Repository
         public async Task<A> GetLast(Expression<Func<A, bool>> descending)
         {
             return await RepositoryContext.Set<A>().OrderBy(descending).FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<A>> GetByInclude(Expression<Func<A, bool>> expression, Expression<Func<A, C>> include, Expression<Func<A, D>> include1, Expression<Func<A, E>> include2)
+        {
+            return await RepositoryContext.Set<A>().Include(include).Include(include1).Include(include2).Where(expression).ToListAsync();
+        }
+
+        public async Task<IEnumerable<A>> GetByInclude(Expression<Func<A, bool>> expression, Expression<Func<A, C>> include, Expression<Func<A, D>> include1, Expression<Func<A, E>> include2, Expression<Func<A, F>> include3)
+        {
+            return await RepositoryContext.Set<A>().Include(include).Include(include1).Include(include2).Include(include3).Where(expression).ToListAsync();
         }
     }
 

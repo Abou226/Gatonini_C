@@ -37,6 +37,7 @@ namespace Entities
         public DbSet<AchatIngredient> AchatIngredients { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<ExternalLogin> ExternalLogins { get; set; }
+        public DbSet<UsageIngredient> UsageIngredients { get; set; }
         public DbSet<Mode_Payement> Mode_Payements { get; set; }
         public virtual DbSet<Gamme> Gammes { get; set; }
         public virtual DbSet<Marque> Marques { get; set; }

@@ -17,12 +17,12 @@ namespace Gatonini.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ContinentsController : GenericController<Continent>
+    public class UsageIngredientsController : GenericController<UsageIngredient, User, Ingredient>
     {
-        private readonly IGenericRepositoryWrapper<Continent> repositoryWrapper;
+        private readonly IGenericRepositoryWrapper<UsageIngredient, User, Ingredient> repositoryWrapper;
         private readonly IConfigSettings _settings;
         private readonly IMapper _mapper;
-        public ContinentsController(IGenericRepositoryWrapper<Continent> wrapper,
+        public UsageIngredientsController(IGenericRepositoryWrapper<UsageIngredient, User, Ingredient> wrapper,
             IConfigSettings settings, IMapper mapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
@@ -31,7 +31,7 @@ namespace Gatonini.Server.Controllers
         }
 
         [HttpPatch("id")]
-        public async Task<ActionResult<Continent>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
+        public async Task<ActionResult<UsageIngredient>> PatchUpdateAsync([FromBody] JsonPatchDocument value, [FromHeader] Guid id)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Gatonini.Server.Controllers
 
 
         [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult<Continent>> Delete([FromRoute] Guid id)
+        public async Task<ActionResult<UsageIngredient>> Delete([FromRoute] Guid id)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    Continent u = new Continent();
+                    UsageIngredient u = new UsageIngredient();
                     u.Id = id;
                     repositoryWrapper.Item.Delete(u);
                     await repositoryWrapper.SaveAsync();
@@ -77,7 +77,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        public override async Task<ActionResult<IEnumerable<Continent>>> GetAll()
+        public override async Task<ActionResult<IEnumerable<UsageIngredient>>> GetAll()
         {
             try
             {
@@ -86,7 +86,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetAll();
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Ingredient);
 
                     return Ok(result);
                 }
@@ -98,8 +98,7 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-
-        public override async Task<ActionResult<IEnumerable<Continent>>> GetBy(string search)
+        public override async Task<ActionResult<IEnumerable<UsageIngredient>>> GetBy(string search)
         {
             try
             {
@@ -108,7 +107,7 @@ namespace Gatonini.Server.Controllers
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Name.ToString().Equals(search));
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Ingredient.Name.ToString().Equals(search), x => x.Ingredient);
 
                     return Ok(result);
                 }
@@ -120,22 +119,45 @@ namespace Gatonini.Server.Controllers
             }
         }
 
-        public override async Task<ActionResult<Continent>> AddAsync([FromBody] Continent value)
+        public override async Task<ActionResult<UsageIngredient>> AddAsync([FromBody] UsageIngredient value)
         {
             try
             {
                 if (value == null)
                     return NotFound();
 
-                var item = await repositoryWrapper.Item.GetBy(x => x.Name == value.Name);
-                if(item.Count() == 0)
+                var item = await repositoryWrapper.Item.GetBy(x => x.Ingredient.Name == value.Ingredient.Name);
+                if (item.Count() == 0)
                 {
                     value.Id = Guid.NewGuid();
                     await repositoryWrapper.Item.AddAsync(value);
                     await repositoryWrapper.SaveAsync();
                 }
-                else  Ok("Element déjà existant");
+                else Ok("Element déjà existant");
                 return Ok(value);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
+            }
+        }
+
+        public override async Task<ActionResult<IEnumerable<UsageIngredient>>> GetBy(string search, DateTime start, DateTime end)
+        {
+            try
+            {
+                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
+                Equals(claim));
+
+                if (identity.Count() != 0)
+                {
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Ingredient.Name.ToString().Equals(search) 
+                    && (x.Date.Date >= start && x.Date.Date <= end), x => x.Ingredient);
+
+                    return Ok(result);
+                }
+                else return NotFound("User not indentified");
             }
             catch (Exception ex)
             {

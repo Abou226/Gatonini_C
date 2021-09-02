@@ -7,17 +7,14 @@ using System.Threading.Tasks;
 
 namespace Entities.Models
 {
-    [Table("GateauFini")]
-    public class GateauFini
+    [Table("UsageIngredient")]
+    public class UsageIngredient
     {
         public Guid Id { get; set; }
 
-        [ForeignKey(nameof(Stock))]
-        public Guid? StockId { get; set; }
-        public Stock_Produit Stock { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal Quantité { get; set; }
+        [ForeignKey(nameof(Ingredient))]
+        public Guid? IngredientId { get; set; }
+        public Ingredient Ingredient { get; set; }
         public DateTime Date { get; set; }
         public Guid? UserId { get; set; }
     }
