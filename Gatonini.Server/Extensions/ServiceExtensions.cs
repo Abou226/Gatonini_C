@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using AutoMapper;
 using Gatonini.Server;
+using Amazon.S3;
 
 namespace Gatonini.Server.Extensions
 {
@@ -54,6 +55,7 @@ namespace Gatonini.Server.Extensions
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<IConfigSettings, ConfigSettings>();
             services.AddScoped<IFacebook, FacebookService>();
+            services.AddAWSService<IAmazonS3>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
             services.AddScoped(typeof(IGenericRepository<,,>), typeof(GenericRepository<,,>));
@@ -90,7 +92,6 @@ namespace Gatonini.Server.Extensions
             services.AddScoped(typeof(IGenericRepositoryWrapper<,,,,,,,,,>), typeof(GenericRepositoryWrapper<,,,,,,,,,>));
             services.AddScoped(typeof(IGenericRepositoryWrapper<,,,,,,,,,,>), typeof(GenericRepositoryWrapper<,,,,,,,,,,>));
             services.AddScoped(typeof(IGenericRepositoryWrapper<,,,,,,,,,,,>), typeof(GenericRepositoryWrapper<,,,,,,,,,,,>));
-
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services)

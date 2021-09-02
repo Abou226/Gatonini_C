@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.1" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.1.28" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.9" />
