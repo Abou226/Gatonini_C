@@ -1626,6 +1626,16 @@ namespace Repository
         {
             return await RepositoryContext.Set<A>().Where(expression).Include(include1).Include(include2).Include(include3).Include(include4).Include(include5).Include(include6).Include(include7).Include(include8).ToListAsync();
         }
+
+        public async Task<IEnumerable<A>> GetByInclude(Expression<Func<A, bool>> expression, Expression<Func<A, C>> include, Expression<Func<A, D>> include1, Expression<Func<A, E>> include2)
+        {
+            return await RepositoryContext.Set<A>().Where(expression).Include(include).Include(include1).Include(include2).ToListAsync();
+        }
+
+        public async Task<IEnumerable<A>> GetByInclude(Expression<Func<A, bool>> expression, Expression<Func<A, C>> include, Expression<Func<A, D>> include1, Expression<Func<A, E>> include2, Expression<Func<A, F>> include3)
+        {
+            return await RepositoryContext.Set<A>().Where(expression).Include(include).Include(include1).Include(include2).Include(include3).ToListAsync();
+        }
     }
 
     public class GenericRepository<A, B, C, D, E, F, G, H, I, J, K> : IGenericRepository<A, B, C, D, E, F, G, H, I, J, K>
