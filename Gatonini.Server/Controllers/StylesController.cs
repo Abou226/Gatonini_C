@@ -17,12 +17,12 @@ namespace Gatonini.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class StylesController : GenericController<Style>
+    public class StylesController : GenericController<Style, User>
     {
-        private readonly IGenericRepositoryWrapper<Style> repositoryWrapper;
+        private readonly IGenericRepositoryWrapper<Style, User> repositoryWrapper;
         private readonly IConfigSettings _settings;
         private readonly IMapper _mapper;
-        public StylesController(IGenericRepositoryWrapper<Style> wrapper,
+        public StylesController(IGenericRepositoryWrapper<Style, User> wrapper,
             IConfigSettings settings, IMapper mapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
@@ -54,12 +54,12 @@ namespace Gatonini.Server.Controllers
 
 
         [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult<Categorie>> Delete([FromRoute] Guid id)
+        public async Task<ActionResult<Style>> Delete([FromRoute] Guid id)
         {
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
@@ -82,7 +82,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
@@ -104,7 +104,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {

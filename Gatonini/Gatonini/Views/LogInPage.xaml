@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView" 
+             xmlns:local="clr-namespace:Gatonini"
+             x:Class="Gatonini.LogInPage" NavigationPage.HasNavigationBar="False">
+    <ContentPage.BindingContext>
+        <local:LogInViewModel/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <ScrollView Orientation="Vertical">
+            <Grid>
+                <Image Source="PhoneBackground.png" HeightRequest="600" Aspect="Fill"/>
+                <Grid RowDefinitions="Auto, *" BackgroundColor="Transparent">
+                    <Label Text="{Binding Title}" TextColor="{DynamicResource Secondary}" 
+                   FontSize="30" FontAttributes="Bold" 
+                   HorizontalTextAlignment="Center" Margin="0,30,0,0"/>
+                    <pancake:PancakeView Grid.Row="1" CornerRadius="20" 
+                                         BackgroundColor="{DynamicResource VeryLight}" 
+                                         Margin="25,65,25,65">
+                        <pancake:PancakeView.Border>
+                            <pancake:Border Color="Transparent" Thickness="2"/>
+                        </pancake:PancakeView.Border>
+                        <pancake:PancakeView.Shadow>
+                            <pancake:DropShadow Color="{DynamicResource LightDark}" Offset="10,10"/>
+                        </pancake:PancakeView.Shadow>
+                        <Grid >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid HorizontalOptions="Center" Margin="40,40,40,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"/>
+                                </Grid.RowDefinitions>
+                                <Frame CornerRadius="30" HeightRequest="10" Grid.ColumnSpan="2">
+
+                                </Frame>
+
+                                <Button CornerRadius="20" Padding="0,-5,0,-5"
+                                        Text="Log In" TextColor="{DynamicResource Secondary}" 
+                                        BackgroundColor="{DynamicResource Primary}"/>
+                                <Button Grid.Column="1" Command="{Binding SignUp}" BackgroundColor="Transparent" 
+                                Padding="0,-5,0,-5" 
+                                TextColor="{DynamicResource Secondary}" 
+                                Text="Sign Up" HorizontalOptions="Center"
+                                CornerRadius="30"/>
+                            </Grid>
+
+                            <Entry Grid.Row="1" Margin="40,0,40,0" Text="{Binding Username}" 
+                                   BackgroundColor="{DynamicResource VeryLight}"
+                                   TextColor="{DynamicResource ThirdColor}" 
+                                   PlaceholderColor="{DynamicResource LightDark}"
+                                   Placeholder="Username" 
+                                   x:Name="txtUsername" 
+                                   Keyboard="Text" />
+                            <Grid  Grid.Row="2" Margin="0,0,35,0" >
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Entry  Margin="40,0,0,0" Text="{Binding Password}" 
+                                            BackgroundColor="{DynamicResource VeryLight}" 
+                                            TextColor="{DynamicResource ThirdColor}" 
+                                            PlaceholderColor="{DynamicResource LightDark}"
+                                            Placeholder="Password" 
+                                            x:Name="txtPassword"
+                                            IsPassword="{Binding IsPassword}"  />
+                                    <ImageButton HorizontalOptions="EndAndExpand" 
+                                                 VerticalOptions="CenterAndExpand" 
+                                                 BackgroundColor="Transparent" 
+                                                 WidthRequest="25" 
+                                                 Source="{Binding EyeImage}" 
+                                                 Command="{Binding EyeCommand}"
+                                                 />
+                                </Grid>
+                            </Grid>
+
+                            <Label x:Name="lblMessage" Text="{Binding Message}" 
+                                   IsVisible="{Binding MessageVisibility}"/>
+
+                            <Label LineBreakMode="WordWrap" Grid.Row="3" HorizontalOptions="End" Margin="40,0,40,10">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Mot de passe oubliez ?" TextDecorations="Underline" FontSize="12">
+                                            <Span.GestureRecognizers>
+                                                <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:LogInViewModel}}, Path=ForgotPasswordTapped}"		
+                                                        CommandParameter="{Binding .}">
+                                                </TapGestureRecognizer>
+                                            </Span.GestureRecognizers>
+                                        </Span>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Button Grid.Row="4" Margin="70,0,70,0" Command="{Binding LogInCommand}" Text="Log In"  
+                            CornerRadius="20" BackgroundColor="{DynamicResource Primary}" 
+                                    TextColor="{DynamicResource Secondary}" />
+
+                            <Label Text="Or" Grid.Row="5" HorizontalOptions="Center"
+                           VerticalOptions="Center" FontAttributes="Bold" 
+                           TextColor="{DynamicResource Secondary}" Margin="20"/>
+                            <Grid Grid.Row="6" Margin="60,0,60,40">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ImageButton Source="facebook.png" Grid.Column="0" Command="{Binding FacebookCommand}" 
+                                             BackgroundColor="Transparent" WidthRequest="40"/>
+                                <ImageButton Source="search.png" Grid.Column="1" Command="{Binding GoogleCommand}" 
+                                             BackgroundColor="Transparent" WidthRequest="40"/>
+                                <ImageButton Source="twitter.png" Grid.Column="2" Command="{Binding TwitterCommand}"
+                                             BackgroundColor="Transparent" WidthRequest="40"/>
+                            </Grid>
+                        </Grid>
+                    </pancake:PancakeView>
+                </Grid>
+            </Grid>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

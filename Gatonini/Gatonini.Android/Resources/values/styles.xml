@@ -14,5 +14,42 @@
     <!-- colorAccent is used as the default value for colorControlActivated
          which is used to tint widgets -->
     <!--<item name="colorAccent">#FF4081</item>-->
+  
+  <item name="windowNoTitle">true</item>
+    <!--We will be using the toolbar so no need to show ActionBar-->
+    <item name="windowActionBar">false</item>
+    <!-- Set theme colors from http://www.google.com/design/spec/style/color.html#color-color-palette -->
+    <!-- colorPrimary is used for the default action bar background -->
+    <item name="colorPrimary">#FFDE59</item>
+    <!-- colorPrimaryDark is used for the status bar -->
+    <item name="colorPrimaryDark">#FFDE59</item>
+    <!-- colorAccent is used as the default value for colorControlActivated
+         which is used to tint widgets -->
+    <item name="colorAccent">#c41414</item>
+    <!-- You can also set colorControlNormal, colorControlActivated
+         colorControlHighlight and colorSwitchThumbNormal. -->
+    <item name="windowActionModeOverlay">true</item>
+    <item name="android:datePickerDialogTheme">@style/AppCompatDialogStyle</item>
+    <item name="android:timePickerDialogTheme">@style/TimePickerDialogTheme</item>
+  </style>
+  <style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+    <item name="colorAccent">#c41414</item>
+  </style>
+
+  <style name="TimePickerDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+    <item name="colorAccent">#c41414</item>
+    <item name="android:timePickerStyle">@style/TimePickerDialogStyle</item>
+  </style>
+
+  <style name="TimePickerDialogStyle" parent="@android:style/Widget.Material.Light.TimePicker">
+    <item name="colorAccent">#c41414</item>
+    <item name="android:timePickerMode">clock</item>
+    <item name="android:headerBackground">#c41414</item>
+  </style>
+  <style name="MyDatePickerStyle" parent="@android:style/Widget.Material.Light.DatePicker">
+    <item name="android:headerBackground">#c41414</item>
+  </style>
+  <style name="MyDatePickerDialogTheme" parent="android:Theme.Material.Light.Dialog">
+    <item name="android:datePickerStyle">@style/MyDatePickerStyle</item>
   </style>
 </resources>

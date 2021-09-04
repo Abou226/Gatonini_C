@@ -63,7 +63,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
@@ -86,7 +86,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {

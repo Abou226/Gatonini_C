@@ -7,7 +7,7 @@ namespace Gatonini.BaseVM
 {
     public class BaseViewModel : INotifyPropertyChanged, IBaseViewModel
     {
-        public const string baseurl = "http://Gatoniniserver-dev.us-east-1.elasticbeanstalk.com/";
+        public const string baseurl = "https://api.gatonini.com/";
 
         public HttpClient httpClient;
         public HttpClient Client => httpClient ?? (httpClient = new HttpClient());
@@ -19,7 +19,7 @@ namespace Gatonini.BaseVM
 
 
 
-        string title = "Mahal Fial";
+        string title = "Gatonini";
         public string Title
         {
             get => title;

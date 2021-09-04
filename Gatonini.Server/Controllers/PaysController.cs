@@ -54,22 +54,15 @@ namespace Gatonini.Server.Controllers
 
 
         [HttpDelete("{id:Guid}")]
-        public async Task<ActionResult<Continent>> Delete([FromRoute] Guid id)
+        public async Task<ActionResult<Pays>> Delete([FromRoute] Guid id)
         {
             try
             {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    Pays u = new Pays();
-                    u.Id = id;
-                    repositoryWrapper.Item.Delete(u);
-                    await repositoryWrapper.SaveAsync();
-                    return Ok(u);
-                }
-                else return NotFound("Utilisateur non identifier");
+                Pays u = new Pays();
+                u.Id = id;
+                repositoryWrapper.Item.Delete(u);
+                await repositoryWrapper.SaveAsync();
+                return Ok(u);
             }
             catch (Exception ex)
             {
@@ -81,16 +74,8 @@ namespace Gatonini.Server.Controllers
         {
             try
             {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetAll();
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
+                var result = await repositoryWrapper.Item.GetAll();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -103,16 +88,8 @@ namespace Gatonini.Server.Controllers
         {
             try
             {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Name.ToString().Equals(search));
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
+                var result = await repositoryWrapper.Item.GetBy(x => x.Name.ToString().Equals(search));
+                return Ok(result);
             }
             catch (Exception ex)
             {

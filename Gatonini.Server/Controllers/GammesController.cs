@@ -123,6 +123,28 @@ namespace Gatonini.Server.Controllers
             }
         }
 
+        [HttpGet]
+        private async Task<ActionResult<IEnumerable<Gamme>>> RefreshAll()
+        {
+            try
+            {
+                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
+                Equals(claim));
+                if (identity.Count() != 0)
+                {
+                    var result = await repositoryWrapper.Item.GetByInclude(x => x.Marque, x => x.Style, x => x.Categorie);
+                    return Ok(result);
+                }
+                else return NotFound("User not indentified");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
+            }
+        }
+
+
         public override async Task<ActionResult<Gamme>> AddAsync([FromBody] Gamme value)
         {
             try

@@ -4,5 +4,20 @@
              x:Class="Gatonini.App">
     <Application.Resources>
 
+        <ResourceDictionary>
+            <Color x:Key="Primary">#FFDE59</Color>
+            <Color x:Key="Secondary">#c41414</Color>
+            <Color x:Key="ThirdColor">#000000</Color>
+            <Color x:Key="Light">#e1edf3</Color>
+            <Color x:Key="VeryLight">#ffffff</Color>
+            <Color x:Key="LightDark">#7C7878</Color>
+
+            <Style x:Key="ButtonOutline" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="TextColor" Value="{StaticResource Primary}"/>
+                <Setter Property="BorderColor" Value="{StaticResource Primary}"/>
+                <Setter Property="BorderWidth" Value="1"/>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

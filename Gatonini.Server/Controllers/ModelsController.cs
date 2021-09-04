@@ -17,12 +17,12 @@ namespace Gatonini.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ModelsController : GenericController<Model>
+    public class ModelsController : GenericController<Model, User>
     {
-        private readonly IGenericRepositoryWrapper<Model> repositoryWrapper;
+        private readonly IGenericRepositoryWrapper<Model, User> repositoryWrapper;
         private readonly IConfigSettings _settings;
         private readonly IMapper _mapper;
-        public ModelsController(IGenericRepositoryWrapper<Model> wrapper,
+        public ModelsController(IGenericRepositoryWrapper<Model, User> wrapper,
             IConfigSettings settings, IMapper mapper) : base(wrapper)
         {
             repositoryWrapper = wrapper;
@@ -59,7 +59,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.ModelId.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
@@ -82,7 +82,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.ModelId.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {
@@ -104,7 +104,7 @@ namespace Gatonini.Server.Controllers
             try
             {
                 var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.ModelId.ToString().
+                var identity = await repositoryWrapper.ItemB.GetBy(x => x.Id.ToString().
                 Equals(claim));
                 if (identity.Count() != 0)
                 {

@@ -61,10 +61,7 @@ namespace Gatonini.Server.Controllers
         {
             try
             {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
+                
                 {
                     var values = await _refreshToken.Item.GetBy(x => x.UserId == id);
                     if (values.Count() != 0)
@@ -81,7 +78,6 @@ namespace Gatonini.Server.Controllers
                     await repositoryWrapper.SaveAsync();
                     return Ok(u);
                 }
-                else return NotFound("Utilisateur non identifier");
             }
             catch (Exception ex)
             {
@@ -93,16 +89,8 @@ namespace Gatonini.Server.Controllers
         {
             try
             {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetAll();
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
+                var result = await repositoryWrapper.Item.GetAll();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -115,17 +103,9 @@ namespace Gatonini.Server.Controllers
         {
             try
             {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
-                Equals(claim));
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Prenom.ToString().Equals(search)
-                    || x.Nom.Contains(search) || x.Prenom.Contains(search) || x.Email.Contains(search));
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
+                var result = await repositoryWrapper.Item.GetBy(x => x.Prenom.ToString().Equals(search)
+                || x.Nom.Contains(search) || x.Prenom.Contains(search) || x.Email.Contains(search));
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -175,19 +155,10 @@ namespace Gatonini.Server.Controllers
         {
             try
             {
-                var claim = (((ClaimsIdentity)User.Identity).Claims.FirstOrDefault(x => x.Type == "UserId").Value);
-                var identity = await repositoryWrapper.Item.GetBy(x => x.Id.ToString().
-                Equals(claim));
+                var result = await repositoryWrapper.Item.GetBy(x => x.Nom.Contains(search)
+                || x.Prenom.Contains(search) || x.Email.Contains(search) && (x.DateOfCreation >= start && x.DateOfCreation <= end));
 
-                if (identity.Count() != 0)
-                {
-                    var result = await repositoryWrapper.Item.GetBy(x => x.Nom.Contains(search)
-                    || x.Prenom.Contains(search) || x.Email.Contains(search) && (x.DateOfCreation >= start && x.DateOfCreation <= end));
-
-                    return Ok(result);
-                }
-                else return NotFound("User not indentified");
-            }
+                return Ok(result);            }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException.Message);
