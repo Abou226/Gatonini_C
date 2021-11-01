@@ -1,31 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gatonini.Views.LoginPage"  
+             xmlns:local="clr-namespace:Gatonini.ViewModels"
              xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView" 
-             xmlns:local="clr-namespace:Gatonini"
-             x:Class="Gatonini.LogInPage" NavigationPage.HasNavigationBar="False">
+             NavigationPage.HasNavigationBar="False">
+
     <ContentPage.BindingContext>
-        <local:LogInViewModel/>
+        <local:LoginViewModel/>
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
         <ScrollView Orientation="Vertical">
             <Grid>
                 <Image Source="PhoneBackground.png" HeightRequest="600" Aspect="Fill"/>
-                <Grid RowDefinitions="Auto, *" BackgroundColor="Transparent">
-                    <Label Text="{Binding Title}" TextColor="{DynamicResource Secondary}" 
-                   FontSize="30" FontAttributes="Bold" 
-                   HorizontalTextAlignment="Center" Margin="0,30,0,0"/>
-                    <pancake:PancakeView Grid.Row="1" CornerRadius="20" 
+                <Grid RowDefinitions="Auto, *" 
+                      BackgroundColor="Transparent">
+                    <Label  Text="{Binding Title}" 
+                            TextColor="{DynamicResource Secondary}" 
+                            FontSize="30" 
+                            FontAttributes="Bold" 
+                            HorizontalTextAlignment="Center" 
+                            Margin="0,30,0,0"/>
+                    <pancake:PancakeView Grid.Row="1" 
+                                         CornerRadius="20" 
                                          BackgroundColor="{DynamicResource VeryLight}" 
                                          Margin="25,65,25,65">
                         <pancake:PancakeView.Border>
-                            <pancake:Border Color="Transparent" Thickness="2"/>
+                            <pancake:Border Color="Transparent" 
+                                            Thickness="2"/>
                         </pancake:PancakeView.Border>
                         <pancake:PancakeView.Shadow>
-                            <pancake:DropShadow Color="{DynamicResource LightDark}" Offset="10,10"/>
+                            <pancake:DropShadow Color="{DynamicResource FourthColor}" 
+                                                Offset="10,10"/>
                         </pancake:PancakeView.Shadow>
-                        <Grid >
+                        <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -36,7 +45,8 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Grid HorizontalOptions="Center" Margin="40,40,40,20">
+                            <Grid HorizontalOptions="Center" 
+                                  Margin="40,40,40,20">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition/>
@@ -44,24 +54,26 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="35"/>
                                 </Grid.RowDefinitions>
-                                <Frame CornerRadius="30" HeightRequest="10" Grid.ColumnSpan="2">
+                                <Frame CornerRadius="30" 
+                                       HeightRequest="10" Grid.ColumnSpan="2">
 
                                 </Frame>
 
                                 <Button CornerRadius="20" Padding="0,-5,0,-5"
                                         Text="Log In" TextColor="{DynamicResource Secondary}" 
                                         BackgroundColor="{DynamicResource Primary}"/>
-                                <Button Grid.Column="1" Command="{Binding SignUp}" BackgroundColor="Transparent" 
-                                Padding="0,-5,0,-5" 
-                                TextColor="{DynamicResource Secondary}" 
-                                Text="Sign Up" HorizontalOptions="Center"
-                                CornerRadius="30"/>
+                                <Button Grid.Column="1" Command="{Binding SignUpCommand}" 
+                                        BackgroundColor="Transparent" 
+                                        Padding="0,-5,0,-5" 
+                                        TextColor="{DynamicResource Secondary}" 
+                                        Text="Sign Up" HorizontalOptions="Center"
+                                        CornerRadius="30"/>
                             </Grid>
 
                             <Entry Grid.Row="1" Margin="40,0,40,0" Text="{Binding Username}" 
                                    BackgroundColor="{DynamicResource VeryLight}"
                                    TextColor="{DynamicResource ThirdColor}" 
-                                   PlaceholderColor="{DynamicResource LightDark}"
+                                   PlaceholderColor="{DynamicResource FourthColor}"
                                    Placeholder="Username" 
                                    x:Name="txtUsername" 
                                    Keyboard="Text" />
@@ -74,7 +86,7 @@
                                     <Entry  Margin="40,0,0,0" Text="{Binding Password}" 
                                             BackgroundColor="{DynamicResource VeryLight}" 
                                             TextColor="{DynamicResource ThirdColor}" 
-                                            PlaceholderColor="{DynamicResource LightDark}"
+                                            PlaceholderColor="{DynamicResource FourthColor}"
                                             Placeholder="Password" 
                                             x:Name="txtPassword"
                                             IsPassword="{Binding IsPassword}"  />
@@ -98,7 +110,7 @@
                                             <Span.GestureRecognizers>
                                                 <TapGestureRecognizer 
                                                         NumberOfTapsRequired="1"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:LogInViewModel}}, Path=ForgotPasswordTapped}"		
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:LoginViewModel}}, Path=ForgotPasswordTapped}"		
                                                         CommandParameter="{Binding .}">
                                                 </TapGestureRecognizer>
                                             </Span.GestureRecognizers>
@@ -106,25 +118,51 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Button Grid.Row="4" Margin="70,0,70,0" Command="{Binding LogInCommand}" Text="Log In"  
-                            CornerRadius="20" BackgroundColor="{DynamicResource Primary}" 
+                            <Button Grid.Row="4" Margin="70,0,70,0" 
+                                    Command="{Binding LoginCommand}" Text="Log In"  
+                                    CornerRadius="20" 
+                                    BackgroundColor="{DynamicResource Primary}" 
                                     TextColor="{DynamicResource Secondary}" />
 
                             <Label Text="Or" Grid.Row="5" HorizontalOptions="Center"
-                           VerticalOptions="Center" FontAttributes="Bold" 
-                           TextColor="{DynamicResource Secondary}" Margin="20"/>
+                                   VerticalOptions="Center" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{DynamicResource Secondary}" 
+                                   Margin="10"/>
+
                             <Grid Grid.Row="6" Margin="60,0,60,40">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <ImageButton Source="facebook.png" Grid.Column="0" Command="{Binding FacebookCommand}" 
-                                             BackgroundColor="Transparent" WidthRequest="40"/>
-                                <ImageButton Source="search.png" Grid.Column="1" Command="{Binding GoogleCommand}" 
-                                             BackgroundColor="Transparent" WidthRequest="40"/>
-                                <ImageButton Source="twitter.png" Grid.Column="2" Command="{Binding TwitterCommand}"
-                                             BackgroundColor="Transparent" WidthRequest="40"/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <pancake:PancakeView    CornerRadius="30"
+                                                        Padding="5,0,0,5" 
+                                                        BackgroundColor="{DynamicResource ThirdColor}" >
+                                    <pancake:PancakeView.Border>
+                                        <pancake:Border Color="{DynamicResource Secondary}" Thickness="3"/>
+                                    </pancake:PancakeView.Border>
+                                    <StackLayout Margin="8,0,8,0" Grid.Row="0" 
+                                                 Orientation="Horizontal">
+                                        <Image  Source="search.png" 
+                                                BackgroundColor="Transparent" 
+                                                WidthRequest="30"/>
+                                        <Label Text="Continuer avec google" 
+                                               TextColor="{DynamicResource Primary}" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center" 
+                                               FontSize="14" />
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                        NumberOfTapsRequired="1"
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:LoginViewModel}}, Path=LoginGoogleCommand}"		
+                                                        CommandParameter="{Binding .}">
+                                            </TapGestureRecognizer>
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                </pancake:PancakeView>
+
+                                
                             </Grid>
                         </Grid>
                     </pancake:PancakeView>

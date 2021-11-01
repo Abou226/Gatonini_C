@@ -1,373 +1,282 @@
-﻿using Acr.UserDialogs;
-using Gatonini.BaseVM;
-using Gatonini.Models;
-using Gatonini.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Acr.UserDialogs;
+using BaseVM;
+using Gatonini.Views;
+using Models;
+using Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(DataService<Produit>))]
-[assembly: Dependency(typeof(DataService<Categorie>))]
-[assembly: Dependency(typeof(DataService<Payement>))]
-[assembly: Dependency(typeof(DataService<Commande>))]
-[assembly: Dependency(typeof(BaseViewModel))]
-[assembly: Dependency(typeof(InitialService))]
+using Style = Models.Style;
 
-namespace Gatonini
+[assembly: Dependency(typeof(ClientService<object, Secrets>))]
+[assembly: Dependency(typeof(ClientService<RefreshToken>))]
+[assembly: Dependency(typeof(ClientService<Style>))]
+[assembly: Dependency(typeof(ClientService<string>))]
+[assembly: Dependency(typeof(ClientService<List<Gamme>>))]
+[assembly: Dependency(typeof(ClientService<Categorie>))]
+[assembly: Dependency(typeof(ClientService<Gamme>))]
+[assembly: Dependency(typeof(BaseViewModel))]
+[assembly: Dependency(typeof(ClientInitial))]
+
+namespace Gatonini.ViewModels
 {
     public class HomeViewModel : BaseVM.BaseViewModel
     {
-        public IBaseViewModel BaseVM { get; }
-        public IDataService<Produit> ProduitService { get; }
-        public ObservableCollection<Section> Sections { get; }
-        public ObservableCollection<Departement> Departements { get; }
+        private ICommand _logoutCommand;
+        private IAuthService _authService;
+        public IDataService<object, Secrets> Secret { get; }
+        public ObservableCollection<Style> Styles { get; }
+        public IDataService<Style> StyleServices { get; }
         public INavigation Navigation { get; }
-        public IDataService<Commande> CommandeService { get; }
-        public IDataService<Payement> PayementService { get; }
-        public ICommand DepartementTapped { get; }
-        public IInitialService Initial { get; }
+        public IDataService<RefreshToken> Token { get; }
+        public IDataService<string> SourceService { get; }
+        private string _profilePic;
+
+        public IDataService<List<Gamme>> GammeListService { get; }
+        public string ProfilePic
+        {
+            get { return _profilePic; }
+            set 
+            {
+                if (_profilePic == value)
+                    return;
+
+                _profilePic = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public HomeViewModel()
         {
-            CommandeService = DependencyService.Get<IDataService<Commande>>();
-            DepartementTapped = new Command(OnDepartementTapped);
-            PayementService = DependencyService.Get<IDataService<Payement>>();
+            Title = "Gatonini";
+            _authService = DependencyService.Get<IAuthService>();
+            GammeListService = DependencyService.Get<IDataService<List<Gamme>>>();
+            Styles = new ObservableCollection<Style>();
+            StyleTappedCommand = new Command(OnStyleTappedCommand);
+            GammeTapped = new Command(OnGammeTapped);
+            PanierCommand = new Command(OnPanierCommand);
+            CategorieService = DependencyService.Get<IDataService<Categorie>>();
+            GammeService = DependencyService.Get<IDataService<Gamme>>();
+            StyleServices = DependencyService.Get<IDataService<Style>>();
+            Styles = new ObservableCollection<Style>();
+            Initial = DependencyService.Get<IInitialService>();
+            SourceService = DependencyService.Get<IDataService<string>>();
+            VentesCommand = new Command(OnVenteCommand);
+            LivraisonCommand = new Command(OnLivraisonCommand);
+            BaseVM = DependencyService.Get<IBaseViewModel>();
+            RefreshCommand = new Command(OnRefreshCommand);
+            Secret = DependencyService.Get<IDataService<object, Secrets>>();
+            GammeLists = new ObservableCollection<GammeList>();
+            PayementCommand = new Command(OnPayementCommand);
+            ProfileCommand = new Command(OnProfileCommand);
+            Catégories = new ObservableCollection<Categorie>();
+            Gammes = new ObservableCollection<Gamme>();
+            FirstLunch = true;
+            Token = DependencyService.Get<IDataService<RefreshToken>>();
+            Init();
+            GetGammesAsync();
         }
 
-        private void OnDepartementTapped(object obj)
+        private async void OnStyleTappedCommand(object obj)
         {
-            var departement = ((Departement)obj);
+            if (IsNotBusy)
+                return;
+            IsNotBusy = true;
+            var style = ((GammeList)obj).Gammes.First().Style;
+            await Navigation.PushAsync( new StyleDetail(style));
+            IsNotBusy = false;
+        }
+
+        async Task Init()
+        {
+            ProfilePic = await SecureStorage.GetAsync("ProfilePic");
+        }
+
+        private async Task GetSource()
+        {
+            var source = await SourceService.GetProjectSourcesAsync("GatoniniSource");
+            await SecureStorage.SetAsync("Source", source);
 
         }
+        
+        public ICommand RefreshCommand { get; }
+        private bool _isRunning;
+        public bool IsRunning
+        {
+            get => _isRunning;
+            set
+            {
+                if (_isRunning == value)
+                    return;
+                _isRunning = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool firstLunch = true;
+
+        public bool FirstLunch
+        {
+            get { return firstLunch; }
+            set 
+            {
+                if (firstLunch == value)
+                    return;
+                firstLunch = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public ICommand ProfileCommand { get; }
+        public ICommand VentesCommand { get; }
+        public ICommand GammeTapped { get; }
+        public IBaseViewModel BaseVM { get; }
+        public ICommand LivraisonCommand { get; }
+        public IInitialService Initial { get; }
+        public ICommand PanierCommand { get; }
+        public ICommand PayementCommand { get; }
+        public IDataService<Categorie> CategorieService { get; }
+        public ICommand StyleTappedCommand { get; }
+        public IDataService<Gamme> GammeService { get; }
+        public ObservableCollection<Categorie> Catégories { get; }
+        public ObservableCollection<Gamme> Gammes { get; }
+        public ObservableCollection<GammeList> GammeLists { get; }
 
         public HomeViewModel(INavigation navigation) : this()
         {
-
+            Navigation = navigation;
         }
 
-        private void GetSection(Departement departement)
+        private async void OnPayementCommand(object obj)
         {
-            var list = new List<Section>()
-            {
-                new Section()
-                {
-                    Name = "Reservations",
-                    Departement = new Departement()
-                    {
-                        Name = "Commerciaux",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Payements",
-                    Departement = new Departement()
-                    {
-                        Name = "Commerciaux",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Livraisons",
-                    Departement = new Departement()
-                    {
-                        Name = "Commerciaux",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Livraisons",
-                    Departement = new Departement()
-                    {
-                        Name = "Logistique",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Prevision Gateaux",
-                    Departement = new Departement()
-                    {
-                        Name = "Logistique",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Ingredients",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Usage Ingrdient",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Etape Finition",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                }, 
-                new Section()
-                {
-                    Name = "Gateau Bases",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Gateau Base",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Rapprt Requette Base",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Rapprt Requette Base",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Achat Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Fournisseur",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Attribution Livraison",
-                    Departement = new Departement()
-                    {
-                        Name = "Logistique",
-                    },
-                }
-            };
+            await Navigation.PushAsync(new RapportPayement());
+        }
 
-            var s = from d in list where d.Departement == departement orderby d.Name select d;
-            Sections.Clear();
-            foreach (var item in s)
+        private async void OnPanierCommand(object obj)
+        {
+            await Navigation.PushAsync(new PanierPage());
+        }
+
+        private async void OnLivraisonCommand(object obj)
+        {
+            await Navigation.PushAsync(new RapportLivraison());
+        }
+
+        private async void OnVenteCommand(object obj)
+        {
+            await Navigation.PushAsync(new ReservationPage());
+        }
+
+        private async void OnGammeTapped(object obj)
+        {
+            var de = ((Gamme)obj);
+            await Navigation.PushAsync(new ProductDetail(de));
+        }
+
+        private async void OnProfileCommand(object obj)
+        {
+            await Navigation.PushAsync(new ProfilePage());
+        }
+
+        private async void OnRefreshCommand(object obj)
+        {
+            await GetGammesAsync();
+        }
+
+        private async Task GetGammesAsync()
+        {
+            if (BaseVM.IsInternetOn || FirstLunch)
             {
-                Sections.Add(item);
+                if(!FirstLunch)
+                    if (IsRunning)
+                        return;
+
+                try
+                {
+                    IsRunning = true;
+
+                    await GetSource();
+
+                    UserDialogs.Instance.ShowLoading("Chargement.....");
+                    var token = await Token.PostAsync(new LogInModel() { Token = await SecureStorage.GetAsync("Token"), Username = "d", Password = "d" },
+                        await SecureStorage.GetAsync("Token"), "authclient/TokenCheck");
+                    if (token == null)
+                    {
+
+                        var resul = await Initial.Get(new LogInModel() { Token = await SecureStorage.GetAsync("Token") });
+                        if (resul != null)
+                        {
+                            await SecureStorage.SetAsync("Token", resul.Token);
+                        }
+                    }
+                    GammeService.ProjectId = await SecureStorage.GetAsync("Source");
+                    var gammes = await GammeService.GetItemsAsync(await SecureStorage.GetAsync("Token"), "Gammes");
+                    Styles.Clear();
+                    GammeLists.Clear();
+                    if (gammes.Count() != 0)
+                    {
+                        Styles.Clear();
+                        foreach (var items in gammes.GroupBy(x => x.StyleId))
+                        {
+                            var gammeList = new GammeList();
+                            var id = items.Key.Value;
+                            var fr = (from d in gammes where d.StyleId == id select d);
+                            Styles.Add(fr.First().Style);
+                            gammeList.Title = fr.First().Style.Name;
+                            gammeList.Id = (Guid)fr.First().StyleId;
+
+                            Gammes.Clear();
+                            foreach (var itemss in fr)
+                            {
+                                Gammes.Add(itemss);
+                                gammeList.Gammes.Add(itemss);
+                            }
+
+                            GammeLists.Add(gammeList);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await InitializeInfo(ex, GetGammesAsync());
+                }
+                finally
+                {
+                    IsRunning = false;
+                    FirstLunch = false;
+                    await Task.Delay(5000);
+                    UserDialogs.Instance.HideLoading();
+                }
             }
         }
 
-        private void GetDepartement()
+        private async Task InitializeInfo(Exception ex, Task action)
         {
-            var list = new List<Section>()
+            Debug.WriteLine($"Echec operation: {ex.Message}");
+            if (ex.Message.Contains("Unauthorize"))
             {
-                new Section()
-                {
-                    Name = "Reservations",
-                    Departement = new Departement()
-                    {
-                        Name = "Commerciaux",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Payements",
-                    Departement = new Departement()
-                    {
-                        Name = "Commerciaux",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Livraisons",
-                    Departement = new Departement()
-                    {
-                        Name = "Commerciaux",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Livraisons",
-                    Departement = new Departement()
-                    {
-                        Name = "Logistique",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Prevision Gateaux",
-                    Departement = new Departement()
-                    {
-                        Name = "Logistique",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Ingredients",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Usage Ingrdient",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Etape Finition",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Gateau Bases",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Gateau Base",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Rapprt Requette Base",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Rapprt Requette Base",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Cuisine",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Requette Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Achat Ingredient",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Fournisseur",
-                    Departement = new Departement()
-                    {
-                        Name = "Stock",
-                    },
-                },
-                new Section()
-                {
-                    Name = "Attribution Livraison",
-                    Departement = new Departement()
-                    {
-                        Name = "Logistique",
-                    },
-                }
-            };
-
-            var s = from d in list group d by new { Departement = d.Departement }
-            into gr  
-                    select new Departement 
-                    { Name = gr.Key.Departement.Name };
-            Departements.Clear();
-            foreach (var item in s)
-            {
-                Departements.Add(item);
+                var result = await Initial.Get(new LogInModel() { Token = await SecureStorage.GetAsync("Token"), Password = "d", Username = "d" });
+                await SecureStorage.SetAsync("Token", result.Token);
+                await SecureStorage.SetAsync("Prenom", result.Prenom);
+                await SecureStorage.SetAsync("Nom", result.Nom);
+                await SecureStorage.SetAsync("ProfilePic", result.ProfilePic);
+                IsRunning = false;
+                await action;
             }
+            else if (ex.Message.Contains("host"))
+            {
+                BaseVM.IsInternetOn = false;
+            }
+            else DependencyService.Get<IMessage>().ShortAlert("Erreur : "+ex.Message);
         }
     }
 }

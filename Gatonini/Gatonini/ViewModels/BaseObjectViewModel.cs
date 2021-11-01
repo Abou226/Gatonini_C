@@ -1,9 +1,9 @@
 ﻿using Acr.UserDialogs;
 using Amazon.S3;
+using BaseVM;
 using Gatonini;
-using Gatonini.BaseVM;
-using Gatonini.Models;
-using Gatonini.Services;
+using Models;
+using Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -32,12 +33,11 @@ namespace Gatonini
         public ICommand BackCommand { get; }
         public ICommand DeleteCommand { get; }
         public string Description { get; set; }
-
-        public INavigation Navigation { get; set; }
-        public IDataService<T> DataService { get; }
+        public IDataService<T> ClientService { get; }
         public IFileUploadService FileUpload { get; }
         public IAmazonS3 S3Client { get; }
         public ICommand RefreshCommand { get; }
+        public INavigation Navigation { get; }
         public ICommand PickImageCommand { get; }
         private ImageSource _pictureSource;
         public ImageSource PictureSource
@@ -60,9 +60,8 @@ namespace Gatonini
         public IInitialService Initial { get; }
         public IBaseViewModel BaseVM { get; }
         public T Item { get; }
-        public BaseObjectViewModel(INavigation navigation)
+        public BaseObjectViewModel()
         {
-            Navigation = navigation;
             BackCommand = new Command(OnBackCommand);
             BaseVM = DependencyService.Get<IBaseViewModel>();
             FileUpload = DependencyService.Get<IFileUploadService>();
@@ -70,7 +69,7 @@ namespace Gatonini
             PickImageCommand = new Command(OnPickImageCommand);
             DeleteCommand = new Command(OnDeleteCommand);
             Item = new T();
-            DataService = DependencyService.Get<IDataService<T>>();
+            ClientService = DependencyService.Get<IDataService<T>>();
             Initial = DependencyService.Get<IInitialService>();
             Items = new ObservableCollection<T>();
             AddCommand = new Command(OnAddCommand);
@@ -80,13 +79,6 @@ namespace Gatonini
         private async void OnDeleteCommand(object obj)
         {
             //await Delete(obj);
-        }
-
-
-
-        public BaseObjectViewModel()
-        {
-            //FileUpload.S3Client = new AmazonS3Client();
         }
 
         private async void OnPickImageCommand(object obj)
@@ -171,8 +163,7 @@ namespace Gatonini
                 }
             }
 
-
-            var list = await DataService.GetItemsAsync(await SecureStorage.GetAsync("Token"), ps + "s");
+            var list = await ClientService.GetItemsAsync(await SecureStorage.GetAsync("Token"), ps + "s");
             Items.Clear();
             if (list.Count() != 0)
             {

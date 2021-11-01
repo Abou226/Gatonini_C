@@ -1,240 +1,114 @@
-﻿using Acr.UserDialogs;
-using Gatonini;
-using Gatonini.BaseVM;
-using Gatonini.Models;
-using Gatonini.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
+using Acr.UserDialogs;
+using BaseVM;
+using Gatonini.Views;
+using Services;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(SignUpService))]
 [assembly: Dependency(typeof(BaseViewModel))]
 
-namespace Gatonini
+namespace Gatonini.ViewModels
 {
-    public class SignUpViewModel : SignUpService
+    public class SignUpViewModel: BaseVM.BaseViewModel
     {
-        public INavigation Navigation { get; set; }
-        public ISignUpService SignUp { get; }
+        private ICommand _loginCommand;
+        private ICommand _signupCommand;
+        private string _username;
+        public INavigation Navigation { get; }
+        private string _password;
         public IBaseViewModel BaseVM { get; }
-        public ILogInService LogIn { get; }
+        private IUserDialogs _userDialogService;
+        private ICommand _loginGoogleCommand;
 
-        public bool IsRunning { get; set; }
+        private IAuthService _authService;
+
+        public SignUpViewModel(IUserDialogs userDialogsService) : this()
+        {
+            _userDialogService = userDialogsService;
+        }
         public SignUpViewModel(INavigation navigation) : this()
         {
             Navigation = navigation;
         }
-
         public SignUpViewModel()
         {
-            SignUp = DependencyService.Get<ISignUpService>();
-            LogIn = DependencyService.Get<ILogInService>();
-            SignUpCommand = new Command(OnSignUpCommand);
-            EyeCommandConfirm = new Command(OnEyeConfirmCommand);
-            EyeCommand = new Command(OnEyeCommand);
+            _authService = DependencyService.Get<IAuthService>();
+            Title = "Gatonini";
             BaseVM = DependencyService.Get<IBaseViewModel>();
-            FacebookCommand = new Command(OnFacebook);
-            GoogleCommand = new Command(OnGoogle);
-            TwitterCommand = new Command(OnTwitter);
-            LogInCommand = new Command(async () =>
+            MessagingCenter.Subscribe<string, string>(this, _authService.getAuthKey(), (sender, args) =>
             {
-                await Navigation.PushAsync(new LogInPage());
+                LoginGoogle(args);
             });
         }
 
-        private void OnEyeConfirmCommand(object obj)
+        public ICommand LoginGoogleCommand
         {
-            if (IsPasswordConfirm)
-            {
-                IsPasswordConfirm = false;
-                EyeImageConfirm = "invisible.png";
-            }
-            else
-            {
-                IsPasswordConfirm = true;
-                EyeImageConfirm = "eye.png";
-            }
+            get { return _loginGoogleCommand = _loginGoogleCommand ?? new Command(LoginGoogleCommandExecute); }
         }
 
-        private async void OnSignUpCommand(object obj)
+        private async Task LoginGoogle(string token)
         {
-            if (BaseVM.IsInternetOn)
+            if (await _authService.SignInWithGoogle(token))
             {
-                if (IsRunning)
-                    return;
-                if (string.IsNullOrWhiteSpace(Username) ||
-                    string.IsNullOrWhiteSpace(Password)
-                    || string.IsNullOrWhiteSpace(PasswordConfirm))
-                    return;
-
-                if (PasswordConfirm != Password)
-                    return;
-
-                try
-                {
-                    IsRunning = true;
-                    UserDialogs.Instance.ShowLoading("Validation....");
-
-                    var result = await SignUp.SignUpAsync(new LogInModel() { Username = Username, Password = Password });
-                    if (result != null && !string.IsNullOrWhiteSpace(result.Token))
-                    {
-                        await SecureStorage.SetAsync("Token", result.Token);
-                        await SecureStorage.SetAsync("AwsAccessKey", result.AwsAccessKey);
-                        await SecureStorage.SetAsync("AwsSecretKey", result.AwsSecretKey);
-                        await SecureStorage.SetAsync("BucketName", result.BucketName);
-                        Application.Current.MainPage = new NavigationPage(new Home());
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                }
-                finally
-                {
-                    IsRunning = false;
-                    UserDialogs.Instance.HideLoading();
-                }
+                Application.Current.MainPage = new NavigationPage(new HomePage());
             }
         }
 
 
-        private void OnEyeCommand(object obj)
+        private void LoginGoogleCommandExecute(object obj)
         {
-            if (IsPassword)
-            {
-                IsPassword = false;
-                EyeImage = "invisible.png";
-            }
-            else
-            {
-                IsPassword = true;
-                EyeImage = "eye.png";
-            }
+            _authService.SignInWithGoogle();
         }
 
-        private bool isPassword = true;
-        public bool IsPassword
+        public ICommand LoginCommand
         {
-            get => isPassword;
-            set
-            {
-                if (isPassword == value)
-                    return;
-                isPassword = value;
-                OnPropertyChanged();
-            }
+            get { return _loginCommand = _loginCommand ?? new Command(LoginCommandExecute); }
         }
-
-        private bool isPasswordConfirm = true;
-        public bool IsPasswordConfirm
-        {
-            get => isPasswordConfirm;
-            set
-            {
-                if (isPasswordConfirm == value)
-                    return;
-                isPasswordConfirm = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string eyeImage = "eye.png";
-        public string EyeImage
-        {
-            get => eyeImage;
-            set
-            {
-                if (eyeImage == value)
-                    return;
-                eyeImage = value;
-                OnPropertyChanged();
-            }
-        }
-        private string eyeImageConfirm = "eye.png";
-        public string EyeImageConfirm
-        {
-            get => eyeImageConfirm;
-            set
-            {
-                if (eyeImageConfirm == value)
-                    return;
-                eyeImageConfirm = value;
-                OnPropertyChanged();
-            }
-        }
-        public Command ForgotPasswordTapped { get; }
-        public ICommand EyeCommand { get; }
-        public ICommand EyeCommandConfirm { get; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string PasswordConfirm { get; set; }
-
         public ICommand SignUpCommand
         {
-            get;
+            get { return _signupCommand = _signupCommand ?? new Command(SignUpCommandExecute); }
         }
-
-        public ICommand LogInCommand
+        private async void LoginCommandExecute(object obj)
         {
-            get;
+            await Navigation.PushAsync(new LoginPage());
         }
-
-        public ICommand FacebookCommand
+        private async void SignUpCommandExecute(object obj)
         {
-            get;
-        }
-
-        private async Task ExternalLogInAsync(string provider)
-        {
-            var authurl = new Uri(baseurl + "api/Auth/ExternalLogin/" + provider);
-            var callbackurl = new Uri("Gatonini://");
-
-            var result = await WebAuthenticator.AuthenticateAsync(authurl, callbackurl);
-
-            await SecureStorage.SetAsync("SocialToken", result.AccessToken);
-            var response = await DependencyService.Get<IDataService<UserProfile>>().GetItemAsync("api/ExternalUserByAccessToken/" + provider);
-            if (response != null)
+            if (await _authService.SignUp(Username, Password))
             {
-                await SecureStorage.SetAsync("Token", response.Token);
-                await SecureStorage.SetAsync("AwsAccessKey", response.AwsAccessKey);
-                await SecureStorage.SetAsync("AwsSecretKey", response.AwsSecretKey);
-                await SecureStorage.SetAsync("BucketName", response.BucketName);
-                await SecureStorage.SetAsync("PicUrl", response.Url);
-                await SecureStorage.SetAsync("UserId", response.UserId.ToString());
-                await SecureStorage.SetAsync("Prenom", response.Prenom);
-                await SecureStorage.SetAsync("Nom", response.Nom);
-                await SecureStorage.SetAsync("Email", response.Email);
-                Application.Current.MainPage = new NavigationPage(new Home());
+                Application.Current.MainPage = new NavigationPage(new HomePage());
+            }
+            else
+            {
+                _userDialogService.Toast("Nom d'utilisateur ou mot de passe incorrect");
+            }
+        }
+        public string Username
+        {
+            get
+            {
+                return _username;
+            }
+            set
+            {
+                _username = value;
+                OnPropertyChanged();
             }
         }
 
-        private async void OnFacebook(object obj)
+        public string Password
         {
-            await ExternalLogInAsync("Facebook");
-        }
-
-        private async void OnTwitter(object obj)
-        {
-            await ExternalLogInAsync("Twitter");
-        }
-
-        private async void OnGoogle(object obj)
-        {
-            await ExternalLogInAsync("Google");
-        }
-
-        public ICommand GoogleCommand
-        {
-            get;
-        }
-
-        public ICommand TwitterCommand
-        {
-            get;
+            get
+            {
+                return _password;
+            }
+            set
+            {
+                _password = value;
+                OnPropertyChanged();
+            }
         }
     }
 }

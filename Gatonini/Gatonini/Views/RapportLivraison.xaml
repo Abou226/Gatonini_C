@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView" 
+             xmlns:local="clr-namespace:Gatonini"
+             x:Class="Gatonini.Views.RapportLivraison" 
+             NavigationPage.HasNavigationBar="False">
+
+    <ContentPage.BindingContext>
+        <local:RapportLivraisonViewModel/>
+    </ContentPage.BindingContext>
+
+    <StackLayout Orientation="Vertical">
+        <Grid BackgroundColor="{DynamicResource Primary}">
+            <Grid HeightRequest="70" BackgroundColor="{DynamicResource Primary}" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackLayout Orientation="Horizontal" HeightRequest="40"
+                         HorizontalOptions="StartAndExpand" 
+                         WidthRequest="35">
+                    <ImageButton Source="Back.png" 
+                             BackgroundColor="Transparent" 
+                                 Command="{Binding BackCommand}"
+                             WidthRequest="30" Margin="15,0,0,0" 
+                             />
+                    <!--<StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer 
+                                        NumberOfTapsRequired="1"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=BackCommand}"
+                                        CommandParameter="{Binding .}">
+                        </TapGestureRecognizer>
+                    </StackLayout.GestureRecognizers>-->
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" Grid.Column="1"
+                         HorizontalOptions="CenterAndExpand">
+                    <Label Text="{Binding Title}" 
+                           HorizontalOptions="Center" 
+                       VerticalOptions="Center" FontAttributes="Bold" 
+                       FontSize="20" TextColor="{DynamicResource ThirdColor}"/>
+                </StackLayout>
+            </Grid>
+        </Grid>
+
+        <RefreshView 
+            IsRefreshing="{Binding IsNotBusy, Mode=TwoWay}"
+            Command="{Binding RefreshCommand}" 
+            RefreshColor="{DynamicResource Primary}" >
+            <StackLayout Margin="20,5">
+                <StackLayout Orientation="Vertical">
+                    <Frame Padding="0" CornerRadius="20">
+                        <SearchBar x:Name="searchBar" SearchCommand="{Binding SearchCommand}" 
+                                   Text="{Binding SearchText}"
+                                   SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"
+                                   TextColor="{DynamicResource Secondary}" 
+                                   PlaceholderColor="{DynamicResource Secondary}" 
+                                   Placeholder="Rechercher....." 
+                                   CancelButtonColor="{DynamicResource Secondary}" 
+                                   BackgroundColor="{DynamicResource Primary}" />
+                    </Frame>
+                    <StackLayout Orientation="Horizontal">
+                        <Frame  BackgroundColor="{DynamicResource ThirdColor}" 
+                                HorizontalOptions="Start" 
+                                CornerRadius="5" 
+                                Padding="3">
+                            <Label  
+                                    FontAttributes="Bold"  
+                                    TextColor="{DynamicResource Primary}" 
+                                    Text="{Binding Total, StringFormat='Total : {0:#,##0} FCFA'}">
+                            </Label>
+                        </Frame>
+
+                        <Frame  BackgroundColor="{DynamicResource ThirdColor}" 
+                                HorizontalOptions="EndAndExpand"
+                                CornerRadius="5" 
+                                Padding="3">
+                            <Label  
+                                    FontAttributes="Bold"  
+                                    TextColor="{DynamicResource Primary}" 
+                                    Text="{Binding Quantité, StringFormat='Quantité : {0:#,##0} '}">
+                            </Label>
+                        </Frame>
+                    </StackLayout>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="Debut :" Margin="0,15,0,0" TextColor="{DynamicResource Secondary}" 
+                               FontSize="14" FontAttributes="Bold"/>
+                        <DatePicker Date="{Binding Start, StringFormat='{0:MM/dd/yyyy}', Mode=TwoWay}" 
+                                    Margin="0,0,0,10" TextColor="{DynamicResource Secondary}"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                        <Label Text="Fin :" TextColor="{DynamicResource Secondary}" 
+                               Margin="0,15,0,0" FontSize="14" FontAttributes="Bold"/>
+                        <DatePicker Date="{Binding End, StringFormat='{0:MM/dd/yyyy}', Mode=TwoWay}" 
+                                    Margin="0,0,0,10" TextColor="{DynamicResource Secondary}"/>
+                    </StackLayout>
+                </StackLayout>
+                <CollectionView x:Name="Ventes_CollectionView" ItemsSource="{Binding Items}" 
+                      Margin="0,10">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <SwipeView.LeftItems>
+                                    <SwipeItems>
+                                        <SwipeItem
+                                                BackgroundColor="Red"
+                                                IconImageSource="delete.png"
+                                                Text="Annuler"
+                                                Command="{Binding Source={x:Reference Ventes_CollectionView}, Path=BindingContext.AnnuléeCommand}"
+                                                CommandParameter="{Binding .}"
+                                                >
+                                        </SwipeItem>
+                                    </SwipeItems>
+                                </SwipeView.LeftItems>
+                                <StackLayout >
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="ColorStates">
+                                            <VisualState x:Name="Normal" />
+                                            <VisualState x:Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter TargetName="myPancakeView" 
+                                                            Property="pancake:PancakeView.BackgroundColor" 
+                                                            Value="Azure"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                    <pancake:PancakeView x:Name="myPancakeView" CornerRadius="30"  
+                                                         Padding="10" Margin="5" BackgroundColor="{DynamicResource Primary}" >
+                                        <pancake:PancakeView.Border>
+                                            <pancake:Border Color="{DynamicResource Primary}" Thickness="3"/>
+                                        </pancake:PancakeView.Border>
+                                        <pancake:PancakeView.Shadow>
+                                            <pancake:DropShadow Color="{DynamicResource Primary}" Offset="10,10"/>
+                                        </pancake:PancakeView.Shadow>
+                                        <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand"
+                                                     BackgroundColor="Transparent">
+                                            <Image  Source="{Binding Gamme.Url}"
+                                                    Margin="0,5,0,5"
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    WidthRequest="70"
+                                                    HeightRequest="50"
+                                                    Aspect="AspectFill"/>
+
+                                            <StackLayout HorizontalOptions="Center"
+                                                VerticalOptions="Center" BackgroundColor="Transparent">
+                                                <Frame BackgroundColor="{DynamicResource ThirdColor}" 
+                                                       HorizontalOptions="Center" 
+                                                       CornerRadius="5" 
+                                                       Padding="3">
+                                                    <Label  x:Name="lblNom" 
+                                                            FontAttributes="Bold" 
+                                                            FontSize="20" 
+                                                            TextColor="{DynamicResource Primary}" Text="{Binding Designation}">
+
+                                                    </Label>
+                                                </Frame>
+                                                <Label TextColor="{DynamicResource Secondary}" HorizontalOptions="Center" Text="{Binding Autres_Info}">
+                                                </Label>
+
+                                                <StackLayout Orientation="Horizontal">
+                                                    <Label Text="Note :" TextColor="{DynamicResource ThirdColor}" 
+                                                           FontAttributes="Bold"/>
+                                                    <Label Text="{Binding Mention}" 
+                                                           TextColor="{DynamicResource ThirdColor}" FontSize="10"/>
+                                                </StackLayout>
+                                                <StackLayout Orientation="Horizontal">
+                                                    <Label Text="Livraison :" TextColor="{DynamicResource ThirdColor}" 
+                                                           FontAttributes="Bold"/>
+                                                    <StackLayout>
+                                                        <StackLayout Orientation="Horizontal">
+                                                            <Label Text="{Binding Date_Livraison, StringFormat='{0:dd/MM/yyyy}'}" 
+                                                                   TextColor="{DynamicResource Secondary}"/>
+                                                            <Label Text="{Binding Heure_Livraison, StringFormat='{0}H'}"
+                                                                   TextColor="{DynamicResource Secondary}"/>
+                                                        </StackLayout>
+                                                        <Label  Text="{Binding Details_Adresse}" 
+                                                                
+                                                                TextColor="{DynamicResource ThirdColor}" 
+                                                                FontSize="10"/>
+                                                        <Label  Text="{Binding Contact_Livraison}" 
+                                                                TextColor="{DynamicResource ThirdColor}" 
+                                                                FontSize="10" 
+                                                                FontAttributes="Bold"/>
+                                                    </StackLayout>
+                                                </StackLayout>
+                                                <StackLayout Orientation="Horizontal">
+                                                    <Frame BackgroundColor="{DynamicResource ThirdColor}" 
+                                                       HorizontalOptions="Start" 
+                                                       CornerRadius="5" 
+                                                       Padding="3">
+                                                        <Label  
+                                                            FontAttributes="Bold"  
+                                                            TextColor="{DynamicResource Primary}" 
+                                                            Text="{Binding Prix_Vente_Unité, StringFormat='Montant : {0:#,##0} FCFA'}">
+                                                        </Label>
+                                                    </Frame>
+                                                </StackLayout>
+                                            </StackLayout>
+                                        </StackLayout>
+                                    </pancake:PancakeView>
+                                </StackLayout>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <ContentView>
+                            <StackLayout HorizontalOptions="CenterAndExpand"
+                                            VerticalOptions="CenterAndExpand">
+                                <Label Text="Cette liste est vide."
+                                        Margin="10,25,10,10"
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Center" 
+                                        TextColor="{DynamicResource Secondary}"/>
+                                <Label Text="Vous pouvez ajouter des commande à partir de de la page d'accueil!"
+                                        FontAttributes="Italic"
+                                        FontSize="12"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Center" TextColor="{DynamicResource Secondary}" />
+                            </StackLayout>
+                        </ContentView>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </StackLayout>
+        </RefreshView>
+    </StackLayout>
+</ContentPage>

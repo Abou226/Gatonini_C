@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gatonini.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace Gatonini
+namespace Gatonini.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SignUpPage : ContentPage
@@ -15,6 +16,7 @@ namespace Gatonini
         public SignUpPage()
         {
             InitializeComponent();
+            BindingContext = new SignUpViewModel(this.Navigation);
         }
     }
 }

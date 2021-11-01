@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+             xmlns:local="clr-namespace:Gatonini"
+             x:Class="Gatonini.Views.ProductDetail" 
+             NavigationPage.HasNavigationBar="False" >
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!--<local:InvertBooleanConverter x:Key="invertBooleanConverter" />-->
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <local:ProductDetailViewModel/>
+    </ContentPage.BindingContext>
+    <ScrollView HorizontalScrollBarVisibility="Never" 
+                VerticalScrollBarVisibility="Default">
+        <Grid BackgroundColor="{DynamicResource Primary}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid HeightRequest="50" BackgroundColor="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackLayout Orientation="Horizontal" 
+                         HorizontalOptions="StartAndExpand" 
+                         WidthRequest="35">
+                    <Image Source="Back.png" 
+                             BackgroundColor="Transparent" 
+                             WidthRequest="30" Margin="15,0,0,0"  />
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer 
+                                            NumberOfTapsRequired="1"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:ProductDetailViewModel}}, Path=BackCommand}"
+                                            CommandParameter="{Binding .}">
+                        </TapGestureRecognizer>
+                    </StackLayout.GestureRecognizers>
+                </StackLayout>
+                <StackLayout    Orientation="Horizontal" 
+                                Grid.Column="1"
+                                HorizontalOptions="CenterAndExpand">
+                    <Label Text="{Binding Title}" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" 
+                           FontAttributes="Bold" 
+                           FontSize="20" 
+                           TextColor="{DynamicResource ThirdColor}"/>
+                </StackLayout>
+                <ImageButton    Source="shopping_bag.png" 
+                                Grid.Column="2" 
+                                Command="{Binding PanierCommand}"
+                                WidthRequest="30" 
+                                BackgroundColor="Transparent" 
+                                Margin="0,0,15,0"  />
+            </Grid>
+            <pancake:PancakeView    Grid.Row="1" 
+                                    CornerRadius="30,30,0,0"
+                                    BackgroundColor="{DynamicResource VeryLight}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="250"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <pancake:PancakeView    CornerRadius="30,30,0,0" 
+                                            BackgroundColor="{StaticResource VeryLight}" >
+                        <StackLayout>
+                            <IndicatorView  x:Name="bestOffersIndicator" 
+                                            IndicatorColor="{DynamicResource Primary}" 
+                                            Margin="0,20,0,0"
+                                            SelectedIndicatorColor="{DynamicResource Secondary}" 
+                                            IndicatorSize="18" 
+                                            IndicatorsShape="Circle" 
+                                            VerticalOptions="FillAndExpand" 
+                                            HorizontalOptions="FillAndExpand"/>
+                            <CarouselView   IndicatorView="{x:Reference bestOffersIndicator}" 
+                                            ItemsSource="{Binding Gammes}" 
+                                            VerticalOptions="Center" 
+                                            x:Name="MyProductCarousselView" 
+                                            HorizontalOptions="Center" 
+                                            Margin="0,10,0,0" Loop="False"
+                                            CurrentItemChangedCommand="{Binding GammeChangedCommand}" 
+                                            CurrentItemChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=CurrentItem}">
+                                <CarouselView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackLayout>
+                                            <pancake:PancakeView>
+                                                <Frame HorizontalOptions="Center" 
+                                               VerticalOptions="Center" 
+                                               Padding="0" CornerRadius="125">
+                                                    <Image Source="{Binding Url}" 
+                                                       WidthRequest="140"/>
+                                                </Frame>
+                                            </pancake:PancakeView>
+                                            <Label  x:Name="lblNom" 
+                                                    FontAttributes="Bold" 
+                                                    TextColor="{DynamicResource ThirdColor}" 
+                                                    HorizontalOptions="Center">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding Marque.Name}"/>
+                                                        <Span Text="-"/>
+                                                        <Span Text="{Binding Style.Name}"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label Text="{Binding Prix_Unité, StringFormat='{0:#,##0} F CFA / parts'}" 
+                                                   FontSize="18" FontAttributes="Bold" 
+                                                   HorizontalTextAlignment="Center" 
+                                                   TextColor="{DynamicResource Secondary}"/>
+                                        </StackLayout>
+                                    </DataTemplate>
+                                </CarouselView.ItemTemplate>
+                            </CarouselView>
+                        </StackLayout>
+                    </pancake:PancakeView>
+                    <pancake:PancakeView Grid.Row="1" 
+                                         BackgroundColor="{DynamicResource Primary}" 
+                                         CornerRadius="30,30,0,30">
+                        <StackLayout>
+                            <StackLayout Margin="20,0,20,0">
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Entry  Text="{Binding Taille.Name, Mode=TwoWay}" 
+                                            Placeholder="Qté"  Keyboard="Numeric" 
+                                            PlaceholderColor="{DynamicResource LightDark}" 
+                                            TextColor="{DynamicResource ThirdColor}"
+                                            IsVisible="False"
+                                            BackgroundColor="{DynamicResource Primary}" />
+                                    <Picker Grid.Column="0" Title="Nb_Part..."  
+                                            HorizontalOptions="FillAndExpand"
+                                            ItemsSource="{Binding Tailles}" 
+                                            FontSize="14"
+                                            TitleColor="{DynamicResource Secondary}" 
+                                            VerticalOptions="Center" 
+                                            IsVisible="{Binding IsGateau}"
+                                            ItemDisplayBinding="{Binding Name}"
+                                            TextColor="{DynamicResource Secondary}" 
+                                            SelectedItem="{Binding Taille, Mode=TwoWay}"/>
+                                    <Label  Grid.Column="1" Text="{Binding Prix_Reel, StringFormat='{0:#,##0} F CFA'}" 
+                                            TextColor="{DynamicResource Secondary}"
+                                            HorizontalOptions="StartAndExpand" 
+                                            VerticalOptions="Center"/>
+                                    <Picker Grid.Column="2" Title="Forme..."  
+                                            HorizontalOptions="FillAndExpand"
+                                            ItemsSource="{Binding Models}" 
+                                            FontSize="14"
+                                            TitleColor="{DynamicResource Secondary}" 
+                                            VerticalOptions="Center" 
+                                            ItemDisplayBinding="{Binding Name}"
+                                            TextColor="{DynamicResource Secondary}" 
+                                            SelectedItem="{Binding Model, Mode=TwoWay}"/>
+                                </Grid>
+
+                                <Picker Title="Saveur du gateau..."  
+                                        HorizontalOptions="FillAndExpand"
+                                        ItemsSource="{Binding Marques}" 
+                                        FontSize="14"
+                                        TitleColor="{DynamicResource Secondary}" 
+                                        VerticalOptions="Center" 
+                                        ItemDisplayBinding="{Binding Name}"
+                                        TextColor="{DynamicResource Secondary}" 
+                                        IsVisible="{Binding Special}"
+                                        SelectedItem="{Binding Marque, Mode=TwoWay}"/>
+                                <Entry  Text="{Binding Mention, Mode=TwoWay}" 
+                                        Placeholder="Note sur gateau" 
+                                        x:Name="txtMention" 
+                                        PlaceholderColor="{DynamicResource LightDark}"  
+                                        TextColor="{DynamicResource ThirdColor}"
+                                        Keyboard="Text" 
+                                        BackgroundColor="{DynamicResource Primary}" />
+                                <Entry  Text="{Binding Adresse_Livraison, Mode=TwoWay}"
+                                        Placeholder="Adresse" x:Name="txtAdresse" 
+                                        PlaceholderColor="{DynamicResource LightDark}" 
+                                        TextColor="{DynamicResource ThirdColor}"
+                                        BackgroundColor="{DynamicResource Primary}"
+                                        Keyboard="Text"/>
+                                <Entry  Text="{Binding Contact_Livraison, Mode=TwoWay}"
+                                        Placeholder="Contact Livraison" 
+                                        PlaceholderColor="{DynamicResource LightDark}" 
+                                        x:Name="txtContact" 
+                                        BackgroundColor="{DynamicResource Primary}" 
+                                        TextColor="{DynamicResource ThirdColor}"
+                                        Keyboard="Telephone"/>
+                                <StackLayout Orientation="Horizontal" Margin="5,0,0,0">
+                                    <Label  Text="Date Livraison" 
+                                            TextColor="{DynamicResource Secondary}"
+                                            HorizontalOptions="StartAndExpand" 
+                                            VerticalOptions="Center"/>
+                                    <DatePicker Date="{Binding Date_Livraison, StringFormat='{0:MM/dd/yyyy}', Mode=TwoWay}"
+                                                Margin="0,0,0,10"
+                                                TextColor="{DynamicResource Secondary}" 
+                                                VerticalOptions="Center" 
+                                                HorizontalOptions="Center"/>
+                                    <Picker Title="Heure......." 
+                                            x:Name="HeurePicker"
+                                            ItemsSource="{Binding Heures}" 
+                                            FontSize="14"
+                                            TitleColor="{DynamicResource Secondary}" 
+                                            VerticalOptions="Center" 
+                                            HorizontalOptions="Center"
+                                            ItemDisplayBinding="{Binding Name}"
+                                            TextColor="{DynamicResource Secondary}" 
+                                            SelectedItem="{Binding Heure, Mode=TwoWay}"/>
+                                </StackLayout>
+                            </StackLayout>
+                            <StackLayout    Orientation="Horizontal" 
+                                            Margin="20,20" >
+                                <StackLayout HeightRequest="30" 
+                                             VerticalOptions="Center" 
+                                             HorizontalOptions="StartAndExpand">
+                                    <Frame      BackgroundColor="{DynamicResource ThirdColor}" 
+                                                CornerRadius="20" 
+                                                Padding="10,-5">
+                                        <Button Text="Ajouter au panier" 
+                                                Command="{Binding AddItem}" 
+                                                FontSize="12" 
+                                                BackgroundColor="Transparent"
+                                                TextColor="{DynamicResource Primary}" />
+                                    </Frame>
+                                </StackLayout>
+                                <StackLayout    HeightRequest="30" 
+                                                HorizontalOptions="EndAndExpand" 
+                                                VerticalOptions="Center">
+                                    <Frame      BackgroundColor="{DynamicResource Secondary}" 
+                                                CornerRadius="20" 
+                                                Padding="10,-5">
+                                        <Button Text="Commander" 
+                                                Command="{Binding BuyCommand}"
+                                                FontSize="12" 
+                                                TextColor="{DynamicResource Primary}" 
+                                                BackgroundColor="Transparent"  />
+                                    </Frame>
+                                </StackLayout>
+                            </StackLayout>
+                        </StackLayout>
+                    </pancake:PancakeView>
+                </Grid>
+            </pancake:PancakeView>
+        </Grid>
+    </ScrollView>
+</ContentPage>

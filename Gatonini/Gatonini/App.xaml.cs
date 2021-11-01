@@ -1,27 +1,37 @@
-﻿using Gatonini.BaseVM;
-using Gatonini.Models;
-using Gatonini.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Models;
 using Plugin.Connectivity;
 using System;
 using System.Threading.Tasks;
-using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+using Xamarin.Essentials;
+using Microsoft.Extensions.DependencyInjection;
+using Gatonini.Views;
+using BaseVM;
+using Services;
+using System.Linq;
+
 [assembly: Dependency(typeof(BaseViewModel))]
-[assembly: Dependency(typeof(DataService<Test>))]
+[assembly: Dependency(typeof(ClientService<Test>))]
+[assembly: Dependency(typeof(ClientService<Entreprise>))]
+[assembly: Dependency(typeof(ClientService<RefreshToken>))]
 
 namespace Gatonini
 {
     public partial class App : Application
     {
         public IBaseViewModel BaseVM { get; }
+        public IDataService<Entreprise> EntrepriseData { get; }
+        public IDataService<RefreshToken> Token { get; }
+        public IInitialService Initial { get; }
         public IDataService<Test> Test { get; }
         public App()
         {
             InitializeComponent();
             BaseVM = DependencyService.Get<IBaseViewModel>();
             Test = DependencyService.Get<IDataService<Test>>();
+            EntrepriseData = DependencyService.Get<IDataService<Entreprise>>();
+            Token = DependencyService.Get<IDataService<RefreshToken>>();
             Device.StartTimer(TimeSpan.FromSeconds(BaseVM.InternetCheckTime), () =>
             {
                 // Do something
@@ -60,50 +70,30 @@ namespace Gatonini
             }
         }
 
-        public App(IHost host) : this() => Host = host;
-
-
-        public static IHost Host { get; private set; }
-
-        public static IHostBuilder BuildHost() =>
-            XamarinHost.CreateDefaultBuilder<App>()
-            .ConfigureServices((context, services) =>
-            {
-                services.AddScoped<Home>();
-                services.AddScoped<LogInPage>();
-                services.AddScoped<SignUpPage>();
-                services.AddScoped(typeof(IDataService<>), typeof(DataService<>));
-                services.AddScoped<IBaseViewModel, BaseViewModel>();
-                services.AddScoped<IInitialService, InitialService>();
-                services.AddScoped<IFileUploadService, FileUploadService>();
-                services.AddScoped<ILogInService, LogInService>();
-                services.AddScoped<ISignUpService, SignUpService>();
-            });
-
 
         protected override async void OnStart()
         {
-            await Host.StartAsync();
-            //SecureStorage.RemoveAll();
+            //await Host.StartAsync();
+            ////SecureStorage.RemoveAll();
             var token = await SecureStorage.GetAsync("Token");
             if (string.IsNullOrWhiteSpace(token))
             {
-                MainPage = new NavigationPage(Host.Services.GetRequiredService<LogInPage>());
+                MainPage = new NavigationPage(new LoginPage());
             }
             else
             {
-                MainPage = new NavigationPage(Host.Services.GetRequiredService<Home>());
+                MainPage = new NavigationPage(new HomePage());
             }
         }
 
         protected override void OnSleep()
         {
-            Task.Run(async () => await Host.SleepAsync());
+            //Task.Run(async () => await Host.SleepAsync());
         }
 
         protected override void OnResume()
         {
-            Task.Run(async () => await Host.ResumeAsync());
+            //Task.Run(async () => await Host.ResumeAsync());
         }
     }
 }

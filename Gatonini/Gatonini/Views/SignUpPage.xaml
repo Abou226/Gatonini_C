@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:local="clr-namespace:Gatonini" 
-             xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
-             x:Class="Gatonini.SignUpPage" 
-             NavigationPage.HasNavigationBar="False">
+             xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView" 
+             xmlns:local="clr-namespace:Gatonini.ViewModels"
+             x:Class="Gatonini.Views.SignUpPage" 
+             NavigationPage.HasNavigationBar="False" >
+
     <ContentPage.BindingContext>
         <local:SignUpViewModel/>
     </ContentPage.BindingContext>
@@ -12,15 +13,20 @@
     <ContentPage.Content>
         <ScrollView Orientation="Vertical">
             <Grid>
-                <Image Source="PhoneBackground.png" HeightRequest="600" Aspect="Fill"/>
-                <Grid RowDefinitions="Auto, *" BackgroundColor="Transparent">
-                    <Label Text="{Binding Title}" TextColor="{DynamicResource Secondary}" 
+                <Image Source="PhoneBackground.png" 
+                       HeightRequest="600" Aspect="Fill"/>
+                <Grid RowDefinitions="Auto, *" 
+                      BackgroundColor="Transparent">
+                    <Label Text="{Binding Title}" 
+                           TextColor="{DynamicResource Secondary}" 
                    FontSize="30" FontAttributes="Bold" 
                    HorizontalTextAlignment="Center" Margin="0,30,0,0"/>
                     <pancake:PancakeView Grid.Row="1" CornerRadius="20" 
-                                         BackgroundColor="{DynamicResource VeryLight}" Margin="25,65,25,65">
+                                         BackgroundColor="{DynamicResource VeryLight}" 
+                                         Margin="25,65,25,65">
                         <pancake:PancakeView.Border>
-                            <pancake:Border Color="Transparent" Thickness="2"/>
+                            <pancake:Border Color="Transparent" 
+                                            Thickness="2"/>
                         </pancake:PancakeView.Border>
                         <pancake:PancakeView.Shadow>
                             <pancake:DropShadow Color="{DynamicResource LightDark}" Offset="10,10"/>
@@ -44,19 +50,19 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="35"/>
                                 </Grid.RowDefinitions>
-                                <Frame CornerRadius="30" HeightRequest="10" Grid.ColumnSpan="2">
-
+                                <Frame CornerRadius="30" 
+                                       HeightRequest="10" Grid.ColumnSpan="2">
                                 </Frame>
 
                                 <Button CornerRadius="20" Padding="0,-5,0,-5"
-                            Text="Sign Up" TextColor="{DynamicResource Secondary}" 
-                            BackgroundColor="{DynamicResource Primary}"/>
+                                        Text="Sign Up" TextColor="{DynamicResource Secondary}" 
+                                        BackgroundColor="{DynamicResource Primary}"/>
                                 <Button Grid.Column="1" Command="{Binding LogInCommand}" 
                                         BackgroundColor="Transparent" 
-                                Padding="0,-5,0,-5" 
-                                TextColor="{DynamicResource Secondary}" 
-                                Text="Log In" HorizontalOptions="Center"
-                                CornerRadius="30"/>
+                                        Padding="0,-5,0,-5" 
+                                        TextColor="{DynamicResource Secondary}" 
+                                        Text="Log In" HorizontalOptions="Center"
+                                        CornerRadius="30"/>
                             </Grid>
 
                             <Entry Grid.Row="1" Margin="40,0,40,0" Text="{Binding Username, Mode=TwoWay}" 
@@ -71,41 +77,42 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Entry  Margin="40,0,0,0" Text="{Binding Password, Mode=TwoWay}" 
-                                   BackgroundColor="{DynamicResource VeryLight}" 
-                                   TextColor="{DynamicResource ThirdColor}" 
-                                   PlaceholderColor="{DynamicResource LightDark}"
-                                   Placeholder="Password" 
+                                            BackgroundColor="{DynamicResource VeryLight}" 
+                                            TextColor="{DynamicResource ThirdColor}" 
+                                            PlaceholderColor="{DynamicResource LightDark}"
+                                            Placeholder="Password" 
                                             x:Name="txtPassword"
-                                            IsPassword="{Binding IsPassword, Mode=TwoWay}"  />
+                                            IsPassword="{Binding IsPassword, Mode=TwoWay}" 
+                                            />
                                     <ImageButton HorizontalOptions="EndAndExpand" 
                                                  VerticalOptions="CenterAndExpand" 
                                                 BackgroundColor="Transparent" 
                                                  WidthRequest="25" 
                                                  Source="{Binding EyeImage}" 
-                                                 Command="{Binding EyeCommand}"/>
+                                                 Command="{Binding EyeCommand}" />
                                 </Grid>
-
                             </Grid>
-
-                            <Grid  Grid.Row="3" Margin="0,0,35,0" >
+                            <Grid  Grid.Row="3" 
+                                   Margin="0,0,35,0" >
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Entry  Margin="40,0,0,0" Text="{Binding PasswordConfirm, Mode=TwoWay}" 
-                                   BackgroundColor="{DynamicResource VeryLight}" 
-                                   TextColor="{DynamicResource ThirdColor}" 
-                                   PlaceholderColor="{DynamicResource LightDark}"
-                                   Placeholder="Password Confirm"
+                                            BackgroundColor="{DynamicResource VeryLight}" 
+                                            TextColor="{DynamicResource ThirdColor}" 
+                                            PlaceholderColor="{DynamicResource LightDark}"
+                                            Placeholder="Password Confirm"
                                             x:Name="txtPasswordConfirm"
-                                            IsPassword="{Binding IsPasswordConfirm, Mode=TwoWay}"  />
+                                            IsPassword="{Binding IsPasswordConfirm, Mode=TwoWay}"  
+                                            />
                                     <ImageButton HorizontalOptions="EndAndExpand" 
                                                  VerticalOptions="CenterAndExpand" 
                                                 BackgroundColor="Transparent" 
-                                                 WidthRequest="25" 
-                                                 Source="{Binding EyeImageConfirm}" 
-                                                 Command="{Binding EyeCommandConfirm}"/>
+                                                WidthRequest="25" 
+                                                Source="{Binding EyeImageConfirm}" 
+                                                Command="{Binding EyeCommandConfirm}"/>
                                 </Grid>
                             </Grid>
 
@@ -114,8 +121,10 @@
                                     TextColor="{DynamicResource Secondary}" />
 
                             <Label Text="Or" Grid.Row="5" HorizontalOptions="Center"
-                           VerticalOptions="Center" FontAttributes="Bold" 
-                           TextColor="{DynamicResource Secondary}" Margin="20"/>
+                                   VerticalOptions="Center" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{DynamicResource Secondary}" 
+                                   Margin="20" />
                             <Grid Grid.Row="6" Margin="60,0,60,40">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>

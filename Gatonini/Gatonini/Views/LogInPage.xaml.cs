@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gatonini.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,15 +8,15 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace Gatonini
+namespace Gatonini.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LogInPage : ContentPage
+    public partial class LoginPage : ContentPage
     {
-        public LogInPage()
+        public LoginPage()
         {
             InitializeComponent();
-            BindingContext = new LogInViewModel(this.Navigation);
+            BindingContext = new LoginViewModel(this.Navigation);
         }
     }
 }

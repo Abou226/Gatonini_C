@@ -1,25 +1,35 @@
-﻿using Acr.UserDialogs;
-using Gatonini.BaseVM;
-using Gatonini.Models;
-using Gatonini.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Essentials;
+using Acr.UserDialogs;
+using Services;
+using Gatonini.ViewModels;
 using Xamarin.Forms;
+using BaseVM;
+using Gatonini.Views;
 
-[assembly: Dependency(typeof(LogInService))]
 [assembly: Dependency(typeof(BaseViewModel))]
 
-namespace Gatonini
+namespace Gatonini.ViewModels
 {
-    public class LogInViewModel : LogInService
+    public class LoginViewModel: BaseVM.BaseViewModel
     {
-        public INavigation Navigation { get; set; }
+        private ICommand _signUpCommand;
+        private ICommand _loginCommand;
+        private ICommand _loginGoogleCommand;
+        private ICommand _eyeCommand;
+        private ICommand _forgotPasswordCommand;
+
+        public INavigation Navigation { get; }
+
+        private string _username;
+        private string _password;
+
+        private IUserDialogs _userDialogService;
+
+        private IAuthService _authService;
+
         public IBaseViewModel BaseVM { get; }
-        public ILogInService LogIn { get; }
 
         private bool isPassword = true;
         public bool IsPassword
@@ -34,8 +44,6 @@ namespace Gatonini
             }
         }
 
-
-
         private string eyeImage = "eye.png";
         public string EyeImage
         {
@@ -49,40 +57,28 @@ namespace Gatonini
             }
         }
         public Command ForgotPasswordTapped { get; }
-        public ICommand EyeCommand { get; }
-        public LogInViewModel(INavigation navigation)
+
+        public LoginViewModel(INavigation navigation) : this()
         {
             Navigation = navigation;
-            ForgotPasswordTapped = new Command(OnItemSelected);
-            LogIn = DependencyService.Get<ILogInService>();
+        }
+
+        public LoginViewModel()
+        {
+            _authService = DependencyService.Get<IAuthService>();
             BaseVM = DependencyService.Get<IBaseViewModel>();
-            LogInCommand = new Command(OnLogIn);
-            EyeCommand = new Command(OnEyeCommand);
-            FacebookCommand = new Command(OnFacebook);
-            TwitterCommand = new Command(OnTwitter);
-            GoogleCommand = new Command(OnGoogle);
-            SignUp = new Command(async () =>
+            Title = "Gatonini";
+            MessagingCenter.Subscribe<string, string>(this, _authService.getAuthKey(), (sender, args) =>
             {
-                await Navigation.PushAsync(new SignUpPage());
+                LoginGoogle(args);
             });
         }
-
-        private async void OnFacebook(object obj)
-        {
-            await ExternalLogInAsync("Facebook");
+        public ICommand EyeCommand 
+        { 
+            get { return _eyeCommand = _eyeCommand ?? new Command(EyeCommandCommandExecute); }
         }
 
-        private async void OnTwitter(object obj)
-        {
-            await ExternalLogInAsync("Twitter");
-        }
-
-        private async void OnGoogle(object obj)
-        {
-            await ExternalLogInAsync("Google");
-        }
-
-        private void OnEyeCommand(object obj)
+        private void EyeCommandCommandExecute(object obj)
         {
             if (IsPassword)
             {
@@ -96,119 +92,87 @@ namespace Gatonini
             }
         }
 
-        private async void OnLogIn(object obj)
+        public ICommand SignUpCommand
         {
-            if (BaseVM.IsInternetOn)
+            get { return _signUpCommand = _signUpCommand ?? new Command(SignUpCommandExecute); }
+        }
+
+        private async void SignUpCommandExecute(object obj)
+        {
+            await Navigation.PushAsync(new SignUpPage());
+        }
+
+        public ICommand LoginGoogleCommand
+        {
+            get { return _loginGoogleCommand = _loginGoogleCommand ?? new Command(LoginGoogleCommandExecute); }
+        }
+
+        private void LoginGoogleCommandExecute(object obj)
+        {
+            _authService.SignInWithGoogle();
+        }
+
+        public ICommand ForgotPasswordCommand 
+        {
+            get { return _forgotPasswordCommand = _forgotPasswordCommand ?? new Command(ForgotPasswordCommandExecute); }
+        }
+
+        private void ForgotPasswordCommandExecute(object obj)
+        {
+            
+        }
+
+        public ICommand LoginCommand
+        {
+            get { return _loginCommand = _loginCommand ?? new Command(LoginCommandExecute); }
+        }
+
+        private async void LoginCommandExecute(object obj)
+        {
+            if(await _authService.SignIn(Username, Password))
             {
-                if (string.IsNullOrWhiteSpace(Username) ||
-                        string.IsNullOrWhiteSpace(Password))
-                    return;
-
-                UserDialogs.Instance.ShowLoading("Validation.....");
-                var result = await LogIn.LogInAsync(new LogInModel()
-                { Username = this.Username, Password = this.Password });
-                UserDialogs.Instance.HideLoading();
-                if (string.IsNullOrWhiteSpace(Message))
-                {
-                    Message = "Utilisateur incorrect !";
-                    MessageVisibility = true;
-                }
-
-                if (result != null && !string.IsNullOrWhiteSpace(result.Token))
-                {
-                    UserDialogs.Instance.ShowLoading("Lancement.....");
-                    await SecureStorage.SetAsync("Token", result.Token);
-                    await SecureStorage.SetAsync("AwsAccessKey", result.AwsAccessKey);
-                    await SecureStorage.SetAsync("AwsSecretKey", result.AwsSecretKey);
-                    await SecureStorage.SetAsync("BucketName", result.BucketName);
-                    Application.Current.MainPage = new NavigationPage(new Home());
-                    UserDialogs.Instance.HideLoading();
-                }
+                Application.Current.MainPage = new NavigationPage(new HomePage());
             }
             else
             {
-                Message = "Erreur internet !";
-                MessageVisibility = true;
+                _userDialogService.Toast("Nom d'utilisateur ou mot de passe incorrect !");
             }
         }
 
-        public LogInViewModel()
-        {
-            Title = "Gain Master";
-            ForgotPasswordTapped = new Command(OnItemSelected);
-            LogIn = DependencyService.Get<ILogInService>();
-        }
-
-        private async void OnItemSelected(object obj)
-        {
-
-        }
-
-        private string username;
         public string Username
         {
-            get => username;
+            get
+            {
+                return _username;
+            }
             set
             {
-                if (username == value)
-                    return;
-
-                username = value;
-                MessageVisibility = false;
-                OnPropertyChanged(nameof(MessageVisibility));
+                _username = value;
+                OnPropertyChanged();
             }
         }
 
-        private string _password;
         public string Password
         {
-            get => _password;
+            get
+            {
+                return _password;
+            }
             set
             {
-                if (_password == value)
-                    return;
                 _password = value;
-
-                MessageVisibility = false;
-                OnPropertyChanged(nameof(MessageVisibility));
+                OnPropertyChanged();
             }
         }
 
-        public Command LogInCommand
+        
+
+        private async Task LoginGoogle(string token)
         {
-            get;
-        }
-
-
-
-        private async Task ExternalLogInAsync(string provider)
-        {
-            var authurl = new Uri(baseurl + "api/Auth/ExternalLogin/" + provider);
-            var callbackurl = new Uri("Gatonini://");
-
-            var result = await WebAuthenticator.AuthenticateAsync(authurl, callbackurl);
-
-            await SecureStorage.SetAsync("SocialToken", result.AccessToken);
-            var response = await DependencyService.Get<IDataService<UserProfile>>().GetItemAsync("api/ExternalUserByAccessToken/" + provider);
-            if (response != null)
+            if (await _authService.SignInWithGoogle(token))
             {
-                await SecureStorage.SetAsync("Token", response.Token);
-                await SecureStorage.SetAsync("AwsAccessKey", response.AwsAccessKey);
-                await SecureStorage.SetAsync("AwsSecretKey", response.AwsSecretKey);
-                await SecureStorage.SetAsync("BucketName", response.BucketName);
-                await SecureStorage.SetAsync("PicUrl", response.Url);
-                await SecureStorage.SetAsync("UserId", response.UserId.ToString());
-                await SecureStorage.SetAsync("Prenom", response.Prenom);
-                await SecureStorage.SetAsync("Nom", response.Nom);
-                await SecureStorage.SetAsync("Email", response.Email);
-                Application.Current.MainPage = new NavigationPage(new Home());
+                Application.Current.MainPage = new NavigationPage(new HomePage());
             }
         }
-
-        public ICommand FacebookCommand { get; }
-        public ICommand GoogleCommand { get; }
-        public ICommand TwitterCommand { get; }
-
-        public ICommand SignUp { get; }
     }
 }
