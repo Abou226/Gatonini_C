@@ -15,7 +15,7 @@ using Xamarin.Forms;
 
 using Style = Models.Style;
 
-[assembly: Dependency(typeof(ClientService<object, Secrets>))]
+[assembly: Dependency(typeof(DataService<Secrets>))]
 [assembly: Dependency(typeof(ClientService<RefreshToken>))]
 [assembly: Dependency(typeof(ClientService<Style>))]
 [assembly: Dependency(typeof(ClientService<string>))]
@@ -31,8 +31,9 @@ namespace Gatonini.ViewModels
     {
         private ICommand _logoutCommand;
         private IAuthService _authService;
-        public IDataService<object, Secrets> Secret { get; }
+        public IDataService<Secrets> Secret { get; }
         public ObservableCollection<Style> Styles { get; }
+        public ICommand ProfileCommand { get; }
         public IDataService<Style> StyleServices { get; }
         public INavigation Navigation { get; }
         public IDataService<RefreshToken> Token { get; }
@@ -73,16 +74,22 @@ namespace Gatonini.ViewModels
             LivraisonCommand = new Command(OnLivraisonCommand);
             BaseVM = DependencyService.Get<IBaseViewModel>();
             RefreshCommand = new Command(OnRefreshCommand);
-            Secret = DependencyService.Get<IDataService<object, Secrets>>();
+            Secret = DependencyService.Get<IDataService<Secrets>>();
             GammeLists = new ObservableCollection<GammeList>();
             PayementCommand = new Command(OnPayementCommand);
-            ProfileCommand = new Command(OnProfileCommand);
+            SettingCommand = new Command(OnSettingCommand);
             Catégories = new ObservableCollection<Categorie>();
             Gammes = new ObservableCollection<Gamme>();
+            ProfileCommand = new Command(OnProfileCommand);
             FirstLunch = true;
             Token = DependencyService.Get<IDataService<RefreshToken>>();
             Init();
             GetGammesAsync();
+        }
+
+        private async void OnProfileCommand(object obj)
+        {
+            await Navigation.PushAsync(new ProfilePage());
         }
 
         private async void OnStyleTappedCommand(object obj)
@@ -91,7 +98,7 @@ namespace Gatonini.ViewModels
                 return;
             IsNotBusy = true;
             var style = ((GammeList)obj).Gammes.First().Style;
-            await Navigation.PushAsync( new StyleDetail(style));
+            await Navigation.PushAsync(new Gammes(style));
             IsNotBusy = false;
         }
 
@@ -136,7 +143,7 @@ namespace Gatonini.ViewModels
         }
 
 
-        public ICommand ProfileCommand { get; }
+        public ICommand SettingCommand { get; }
         public ICommand VentesCommand { get; }
         public ICommand GammeTapped { get; }
         public IBaseViewModel BaseVM { get; }
@@ -182,7 +189,7 @@ namespace Gatonini.ViewModels
             await Navigation.PushAsync(new ProductDetail(de));
         }
 
-        private async void OnProfileCommand(object obj)
+        private async void OnSettingCommand(object obj)
         {
             await Navigation.PushAsync(new ProfilePage());
         }
@@ -207,17 +214,8 @@ namespace Gatonini.ViewModels
                     await GetSource();
 
                     UserDialogs.Instance.ShowLoading("Chargement.....");
-                    var token = await Token.PostAsync(new LogInModel() { Token = await SecureStorage.GetAsync("Token"), Username = "d", Password = "d" },
-                        await SecureStorage.GetAsync("Token"), "authclient/TokenCheck");
-                    if (token == null)
-                    {
+                    await TokenManagement();
 
-                        var resul = await Initial.Get(new LogInModel() { Token = await SecureStorage.GetAsync("Token") });
-                        if (resul != null)
-                        {
-                            await SecureStorage.SetAsync("Token", resul.Token);
-                        }
-                    }
                     GammeService.ProjectId = await SecureStorage.GetAsync("Source");
                     var gammes = await GammeService.GetItemsAsync(await SecureStorage.GetAsync("Token"), "Gammes");
                     Styles.Clear();
@@ -259,6 +257,42 @@ namespace Gatonini.ViewModels
             }
         }
 
+        private async Task TokenManagement()
+        {
+            try
+            {
+                var tok = await SecureStorage.GetAsync("Token");
+                if (!string.IsNullOrWhiteSpace(tok))
+                {
+                    var token = await Token.PostAsync(new LogInModel() { Token = await SecureStorage.GetAsync("Token"), Username = "d", Password = "d" },
+                    await SecureStorage.GetAsync("Token"), "authclient/TokenCheck");
+                    if (token == null)
+                    {
+                        var resul = await Initial.Get(new LogInModel() { Token = await SecureStorage.GetAsync("Token") });
+                        if (resul != null)
+                        {
+                            await SecureStorage.SetAsync("Token", resul.Token);
+                        }
+                    }
+                }
+                else
+                {
+                    var token = await Secret.GetItemAsync(null, "authclient/useremail/" + await SecureStorage.GetAsync("Email"));
+                    if (token != null)
+                    {
+                        await SecureStorage.SetAsync("Token", token.Token);
+                        await SecureStorage.SetAsync("Prenom", token.Prenom);
+                        await SecureStorage.SetAsync("Nom", token.Nom);
+                        await SecureStorage.SetAsync("ProfilePic", token.ProfilePic);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
         private async Task InitializeInfo(Exception ex, Task action)
         {
             Debug.WriteLine($"Echec operation: {ex.Message}");
@@ -275,8 +309,9 @@ namespace Gatonini.ViewModels
             else if (ex.Message.Contains("host"))
             {
                 BaseVM.IsInternetOn = false;
+                DependencyService.Get<IMessage>().ShortAlert("Erreur: Veillez verifier votre connection internet");
             }
-            else DependencyService.Get<IMessage>().ShortAlert("Erreur : "+ex.Message);
+            //else DependencyService.Get<IMessage>().ShortAlert("Erreur : "+ex.Message);
         }
     }
 }

@@ -47,7 +47,7 @@
         <RefreshView 
             IsRefreshing="{Binding IsNotBusy, Mode=TwoWay}"
             Command="{Binding RefreshCommand}" 
-            RefreshColor="{DynamicResource Primary}" >
+            RefreshColor="{DynamicResource Secondary}" >
             <StackLayout Margin="20,5">
                 <StackLayout Orientation="Vertical">
                     <Frame Padding="0" CornerRadius="20">

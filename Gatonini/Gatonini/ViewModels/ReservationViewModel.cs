@@ -15,6 +15,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(ClientService<Vente>))]
+[assembly: Dependency(typeof(ClientService<Reservation>))]
 [assembly: Dependency(typeof(BaseViewModel))]
 [assembly: Dependency(typeof(ClientService<EditObject>))]
 [assembly: Dependency(typeof(ClientInitial))]
@@ -194,7 +195,7 @@ namespace Gatonini
             }
         }
 
-        private async Task Annulée(Reservation Vente)
+        private async Task Annulée(Reservation reservation)
         {
             if (BaseVM.IsInternetOn)
             {
@@ -206,7 +207,7 @@ namespace Gatonini
                     IsNotBusy = false;
                     List<EditObject> list = new List<EditObject>();
                     list.Add(new EditObject() { Op = "Replace", Value = "True", Path = "Annulée" });
-                    var item = await EditService.UpdateListAsync(list, await SecureStorage.GetAsync("Token"), "reservations/" + Vente.Id.ToString());
+                    var item = await EditService.UpdateListAsync(list, await SecureStorage.GetAsync("Token"), "reservations/" + reservation.Id.ToString());
 
                     if (item.Count() != 0)
                     {
@@ -226,9 +227,9 @@ namespace Gatonini
                     }
                     else if (ex.Message.Contains("host"))
                     {
-                        BaseVM.IsInternetOn = false;
+                        DependencyService.Get<IMessage>().LongAlert("Erreur: Veillez verifier votre connection internet");
                     }
-                    else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
+                    //else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
                 }
                 finally
                 {
@@ -269,7 +270,11 @@ namespace Gatonini
                         foreach (var item in Vente)
                         {
                             Total += item.Prix_Vente_Unité;
-                            item.Designation = item.Gamme.Marque.Name + "_" + item.Gamme.Style.Name;
+                            string marque = "";
+                            if (item.Gamme.Marque == null)
+                                marque = item.Marque.Name;
+                            else marque = item.Gamme.Marque.Name;
+                            item.Designation = marque + "_" + item.Gamme.Style.Name;
                             item.Autres_Info = item.Taille.Name + " parts, " + item.Model.Name;
                             if (item.Gamme.Url == null)
                                 item.Gamme.Url = item.Gamme.Marque.Url;

@@ -156,8 +156,9 @@ namespace Gatonini
                     else if (e.Message.Contains("host"))
                     {
                         BaseVM.IsInternetOn = false;
+                        DependencyService.Get<IMessage>().LongAlert("Erreur: Veillez verifier votre connection internet");
                     }
-                    else DependencyService.Get<IMessage>().LongAlert("Erreur" + e.Message);
+                    //else DependencyService.Get<IMessage>().LongAlert("Erreur" + e.Message);
                 }
                 finally
                 {
@@ -205,9 +206,10 @@ namespace Gatonini
                     }
                     else if (ex.Message.Contains("host"))
                     {
+                        DependencyService.Get<IMessage>().ShortAlert("Erreur: Veillez verifier votre connection internet");
                         await GetPaniersAsync();
                     }
-                    else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
+                    //else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
                 }
                 finally
                 {
@@ -280,8 +282,8 @@ namespace Gatonini
                             var result = await Initial.Get(new LogInModel() { Token = await SecureStorage.GetAsync("Token") });
                             OnAddCommand(obj);
                         }
-                        else
-                            DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
+                        //else
+                        //    DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
                     }
                     finally
                     {

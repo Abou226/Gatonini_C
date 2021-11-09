@@ -38,6 +38,18 @@ namespace Gatonini
                 CheckConnection();
                 return true; // True = Repeat again, False = Stop the timer
             });
+
+            OSAppTheme currentTheme = Application.Current.RequestedTheme;
+            if (currentTheme == OSAppTheme.Dark)
+            {
+                Resources["Primary"] = Resources["ThirdColor"];
+                Resources["ThirdColor"] = Resources["Primary"];
+            }
+            else if (currentTheme == OSAppTheme.Light)
+            {
+                Resources["Primary"] = Resources["Primary"];
+                Resources["ThirdColor"] = Resources["ThirdColor"];
+            }
         }
 
         private async void CheckConnection()

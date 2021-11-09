@@ -207,10 +207,10 @@ namespace Gatonini
             var result = await Application.Current.MainPage.DisplayAlert("Confirmation", "Voulez-vous vraiment annuler cette commande ?", "Oui", "Non");
             if (result)
             {
-                await Annulée(((Vente)obj));
+                await Annulée(((Reservation)obj));
             }
         }
-        private async Task Annulée(Vente Vente)
+        private async Task Annulée(Reservation reservation)
         {
             if (BaseVM.IsInternetOn)
             {
@@ -223,7 +223,7 @@ namespace Gatonini
                     List<EditObject> list = new List<EditObject>();
                     list.Add(new EditObject() { Op = "Replace", Value = "True", Path = "Annulée" });
                     EditService.ProjectId = await SecureStorage.GetAsync("Source");
-                    var item = await EditService.UpdateListAsync(list, await SecureStorage.GetAsync("Token"), "Ventes/" + Vente.Id.ToString());
+                    var item = await EditService.UpdateListAsync(list, await SecureStorage.GetAsync("Token"), "reservations/" + reservation.Id.ToString());
 
                     if (item.Count() != 0)
                     {
@@ -244,8 +244,9 @@ namespace Gatonini
                     else if (ex.Message.Contains("host"))
                     {
                         BaseVM.IsInternetOn = false;
+                        DependencyService.Get<IMessage>().LongAlert("Erreur: Veillez verifier votre connection internet");
                     }
-                    else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
+                    //else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
                 }
                 finally
                 {
@@ -279,7 +280,11 @@ namespace Gatonini
                             Total += item.Prix_Vente_Unité;
                             if (item.Gamme.Url == null)
                                 item.Gamme.Url = item.Gamme.Marque.Url;
-                            item.Designation = item.Gamme.Marque.Name + "-" + item.Taille.Name + ", " + item.Model.Name;
+                            string marque = "";
+                            if (item.Gamme.Marque == null)
+                                marque = item.Marque.Name;
+                            else marque = item.Gamme.Marque.Name;
+                            item.Designation = marque + "-" + item.Taille.Name + ", " + item.Model.Name;
                             item.Autres_Info = item.Taille.Name + " parts, " + item.Model.Name;
                             Items.Add(item);
                             InitialItems.Add(item);
@@ -298,7 +303,7 @@ namespace Gatonini
                     {
                         await GetItemsAsync();
                     }
-                    else await Application.Current.MainPage.DisplayAlert("Error!", ex.Message, "OK");
+                    //else await Application.Current.MainPage.DisplayAlert("Error!", ex.Message, "OK");
                 }
                 finally
                 {

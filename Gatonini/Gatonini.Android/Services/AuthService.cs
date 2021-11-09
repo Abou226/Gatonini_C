@@ -66,7 +66,6 @@ namespace Gatonini.Droid.Services
         {
             try
             {
-
                 HttpClient cls = new HttpClient();
                 cls.BaseAddress = new Uri(BaseViewModel.baseurl);
                 LogInModel user = new LogInModel();
@@ -142,27 +141,28 @@ namespace Gatonini.Droid.Services
             var list = new List<Client>();
             list.Add(user);
             var users = await Client.AddListAsync(list, null);
+            await SecureStorage.SetAsync("Email", google.SignInAccount.Email);
             if (users != null)
             {
-                var token = await Secret.GetAsync(null, "authclient/useremail/" + google.SignInAccount.Email);
-                if (token != null)
-                {
-                    await SecureStorage.SetAsync("Token", token.First().Token);
-                    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
-                    await SecureStorage.SetAsync("Nom", token.First().Nom);
-                    await SecureStorage.SetAsync("ProfilePic", token.First().ProfilePic);
-                }
+                //var token = await Secret.GetAsync(null, "authclient/useremail/" + google.SignInAccount.Email);
+                //if (token != null)
+                //{
+                //    await SecureStorage.SetAsync("Token", token.First().Token);
+                //    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
+                //    await SecureStorage.SetAsync("Nom", token.First().Nom);
+                //    await SecureStorage.SetAsync("ProfilePic", token.First().ProfilePic);
+                //}
             }
             else
             {
-                var token = await Secret.GetAsync(null, "authclient/useremail/" + google.SignInAccount.Email);
-                if (token != null)
-                {
-                    await SecureStorage.SetAsync("Token", token.First().Token);
-                    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
-                    await SecureStorage.SetAsync("Nom", token.First().Nom);
-                    await SecureStorage.SetAsync("ProfilePic", token.First().ProfilePic);
-                }
+                //var token = await Secret.GetAsync(null, "authclient/useremail/" + google.SignInAccount.Email);
+                //if (token != null)
+                //{
+                //    await SecureStorage.SetAsync("Token", token.First().Token);
+                //    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
+                //    await SecureStorage.SetAsync("Nom", token.First().Nom);
+                //    await SecureStorage.SetAsync("ProfilePic", token.First().ProfilePic);
+                //}
             }
             return true;
         }

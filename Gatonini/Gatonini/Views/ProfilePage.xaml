@@ -1,12 +1,129 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Gatonini.Views.ProfilePage">
-    <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
-    </ContentPage.Content>
+             x:Class="Gatonini.Views.ProfilePage" 
+             NavigationPage.HasNavigationBar="False" 
+             xmlns:viewmodel="clr-namespace:Gatonini.ViewModels" 
+             xmlns:pancake="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView">
+    <Grid RowDefinitions="50,*" >
+        <Grid BackgroundColor="{DynamicResource Primary}">
+            <Grid HeightRequest="50" 
+                  BackgroundColor="{DynamicResource Primary}" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <StackLayout Orientation="Horizontal" 
+                             HeightRequest="40"
+                             HorizontalOptions="StartAndExpand" 
+                             WidthRequest="35">
+                    <ImageButton    Source="Back.png" 
+                                    BackgroundColor="Transparent" 
+                                    Command="{Binding BackCommand}"
+                                    WidthRequest="30" 
+                                    Margin="15,0,0,0"/>
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer 
+                                            NumberOfTapsRequired="1"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ProfileViewModel}}, Path=BackCommand}"
+                                            CommandParameter="{Binding .}">
+                        </TapGestureRecognizer>
+                    </StackLayout.GestureRecognizers>
+                </StackLayout>
+                <StackLayout    Orientation="Horizontal" 
+                                Grid.Column="1"
+                                HorizontalOptions="CenterAndExpand">
+                    <Label Text="{Binding Title}" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" 
+                           FontAttributes="Bold" 
+                           FontSize="20" 
+                           TextColor="{DynamicResource ThirdColor}"/>
+                </StackLayout>
+            </Grid>
+        </Grid>
+        <ScrollView Grid.Row="1" Margin="0,-7,0,0" Padding="0">
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="250"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <pancake:PancakeView CornerRadius="0,0,30,30" 
+                                     BackgroundColor="{DynamicResource Primary}">
+                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                        <Frame WidthRequest="70" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" 
+                           Margin="0,0,0,40" 
+                           CornerRadius="55" 
+                           HeightRequest="70">
+                            <ImageButton Source="{Binding PictureSource}" 
+                               Aspect="Fill" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"/>
+                            
+                        </Frame>
+                        <Label TextColor="{DynamicResource Secondary}" FontSize="20"  >
+                            <Label.FormattedText>
+                                <FormattedString >
+                                    <Span Text="{Binding Prenom}"/>
+                                    <Span Text=" "/>
+                                    <Span Text="{Binding Nom}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Text="{Binding Email}" HorizontalOptions="Center" FontSize="10"/>
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                            NumberOfTapsRequired="1"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ProfileViewModel}}, Path=ProfileImageCommand}"
+                                            CommandParameter="{Binding .}">
+                            </TapGestureRecognizer>
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                    
+                    
+                </pancake:PancakeView>
+                <pancake:PancakeView    Grid.Row="1"
+                                        BackgroundColor="White"
+                                        CornerRadius="0,0,0,0">
+                    <StackLayout Margin="30,10" HorizontalOptions="FillAndExpand">
+
+                        <Entry Grid.Column="1" Text="{Binding Prenom}" 
+                               Placeholder="Prenom" PlaceholderColor="{DynamicResource Secondary}"
+                                VerticalOptions="Center" CharacterSpacing="3"
+                                HorizontalOptions="StartAndExpand" 
+                                TextColor="{DynamicResource Secondary}"/>
+                        
+                        <Entry  Grid.Column="1" Text="{Binding Nom}" 
+                                VerticalOptions="Center" CharacterSpacing="3"
+                                Placeholder="Nom de famille" 
+                                PlaceholderColor="{DynamicResource Secondary}"
+                                HorizontalOptions="StartAndExpand" 
+                                TextColor="{DynamicResource Secondary}"/>
+                        <Entry  Grid.Column="1" Text="{Binding Telephone}" WidthRequest="200"
+                                Placeholder="Telephone" 
+                                PlaceholderColor="{DynamicResource Secondary}"
+                                VerticalOptions="Center" Keyboard="Numeric" MaxLength="15"
+                                CharacterSpacing="3"
+                                HorizontalOptions="StartAndExpand" 
+                                TextColor="{DynamicResource Secondary}"/>
+
+                        <Frame BackgroundColor="{DynamicResource Secondary}" 
+                               Margin="0,30"
+                               CornerRadius="20" 
+                               Padding="10,-5" 
+                               HorizontalOptions="Center">
+                            <Button Text="Modifier" 
+                                    Command="{Binding EditCommand}"
+                                    FontSize="12" 
+                                    TextColor="{DynamicResource Primary}" 
+                                    BackgroundColor="Transparent" />
+                        </Frame>
+                    </StackLayout>
+                </pancake:PancakeView>
+            </Grid>
+        </ScrollView>
+    </Grid>
 </ContentPage>

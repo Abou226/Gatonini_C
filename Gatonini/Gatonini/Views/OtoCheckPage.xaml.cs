@@ -4,21 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
-using Style = Models.Style;
 
 namespace Gatonini.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class StyleDetail : ContentPage
+    public partial class OtoCheckPage : ContentPage
     {
-        public StyleDetail(Style style)
+        public OtoCheckPage()
         {
             InitializeComponent();
-            BindingContext = new StyleDetailViewModel(style);
+            BindingContext = new OtpCheckViewModel(this.Navigation);
         }
     }
 }

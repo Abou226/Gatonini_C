@@ -141,7 +141,11 @@ namespace Gatonini
                         foreach (var item in items)
                         {
                             Total += item.Prix_Vente_Unité;
-                            item.Designation = item.Gamme.Marque + "-" + item.Taille.Name + ", " + item.Model.Name;
+                            string marque = "";
+                            if (item.Gamme.Marque == null)
+                                marque = item.Marque.Name;
+                            else marque = item.Gamme.Marque.Name;
+                            item.Designation = marque + "-" + item.Taille.Name + ", " + item.Model.Name;
                             if (item.Gamme.Url == null)
                                 item.Gamme.Url = item.Gamme.Marque.Url;
                             Items.Add(item);
@@ -158,9 +162,10 @@ namespace Gatonini
                     }
                     else if (ex.Message.Contains("host"))
                     {
+                        DependencyService.Get<IMessage>().LongAlert("Erreur: Veillez verifier votre connection internet");
                         await GetItemsAsync();
                     }
-                    else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
+                    //else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
                 }
                 finally
                 {

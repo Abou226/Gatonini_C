@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gatonini.Views.OtoCheckPage" 
+             NavigationPage.HasNavigationBar="False" 
+             xmlns:viewmodel="clr-namespace:Gatonini.ViewModels">
+    
+    
+    <Grid RowDefinitions="50,*" >
+        <Grid BackgroundColor="{DynamicResource Primary}">
+            <Grid HeightRequest="50" 
+                  BackgroundColor="{DynamicResource Primary}" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <StackLayout Orientation="Horizontal" 
+                             HeightRequest="40"
+                             HorizontalOptions="StartAndExpand" 
+                             WidthRequest="35">
+                    <ImageButton    Source="Back.png" 
+                                    BackgroundColor="Transparent" 
+                                    Command="{Binding BackCommand}"
+                                    WidthRequest="30" 
+                                    Margin="15,0,0,0"/>
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer 
+                                            NumberOfTapsRequired="1"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:OtpCheckViewModel}}, Path=BackCommand}"
+                                            CommandParameter="{Binding .}">
+                        </TapGestureRecognizer>
+                    </StackLayout.GestureRecognizers>
+                </StackLayout>
+                <StackLayout    Orientation="Horizontal" 
+                                Grid.Column="1"
+                                HorizontalOptions="CenterAndExpand">
+                    <Label Text="{Binding Title}" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" 
+                           FontAttributes="Bold" 
+                           FontSize="20" 
+                           TextColor="{DynamicResource ThirdColor}"/>
+                </StackLayout>
+            </Grid>
+        </Grid>
+        <ScrollView Grid.Row="1" 
+                    Margin="0,-7,0,0" 
+                    Padding="0">
+            <Grid   HorizontalOptions="Center" 
+                    VerticalOptions="Center">
+
+                <StackLayout>
+                    <Image Source="message.png" />
+                </StackLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>

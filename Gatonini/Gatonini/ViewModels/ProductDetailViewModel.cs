@@ -7,7 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -94,6 +97,8 @@ namespace Gatonini
                     return;
                 _adresse_livraison = value;
                 OnPropertyChanged();
+                //if(!string.IsNullOrWhiteSpace(_adresse_livraison))
+                //GetAdresseAsync();
             }
         }
 
@@ -286,9 +291,10 @@ namespace Gatonini
         {
             Gamme = gamme;
             Navigation = navigation;
-            Title = Gamme.Marque.Name;
-            Marque = Gamme.Marque;
             Style = Gamme.Style;
+            if (Style.Style_Special)
+                Title = $"{Gamme.Categorie.Name} '{Gamme.Style.Name}'";
+            else Title = Gamme.Marque.Name;
             if (Gamme.Categorie.Name == "Gateau" || Gamme.Categorie.Name == "Gâteau"
                 || Gamme.Categorie.Name == "Gateaux" || Gamme.Categorie.Name == "Gâteaux")
                 IsGateau = true;
@@ -406,9 +412,8 @@ namespace Gatonini
                     }
                     else if (ex.Message.Contains("host"))
                     {
-                        await GetHeuresAsync();
+                        MessageAlert.LongAlert("Erreur: Veillez verifier votre connection internet");
                     }
-                    else MessageAlert.LongAlert("Erreur" + ex.Message);
                 }
                 finally
                 {
@@ -430,13 +435,19 @@ namespace Gatonini
                 {
                     IsRunning = true;
                     IsNotBusy = false;
+                    
                     UserDialogs.Instance.ShowLoading("Chargement.....");
+                    var adresse = await SecureStorage.GetAsync("Adresse");
+                    if (!string.IsNullOrWhiteSpace(adresse))
+                        Adresse_Livraison = adresse;
                     GammeService.ProjectId = await SecureStorage.GetAsync("Source");
                     var items = await GammeService.GetItemsAsync(await SecureStorage.GetAsync("Token"), "Gammes/single/"+Gamme.Id.ToString());
                     Gammes.Clear();
                     if (items.Count() != 0)
                     {
+                        if(!Special)
                         Marque = items.First().Marque;
+
                         Style = items.First().Style;
                         foreach (var item in items)
                         {
@@ -477,7 +488,6 @@ namespace Gatonini
                         }
                     }
                     
-
                     HeureService.ProjectId = await SecureStorage.GetAsync("Source");
                     var heures = await HeureService.GetItemsAsync(await SecureStorage.GetAsync("Token"), "Heures/" + Date_Livraison.ToString("MM-dd-yyyy"));
                     Heures.Clear();
@@ -517,9 +527,9 @@ namespace Gatonini
                     }
                     else if (ex.Message.Contains("host"))
                     {
-                        await GetProductsAsync(gamme);
+                        MessageAlert.LongAlert("Erreur: Veillez verifier votre connection internet");
                     }
-                    else MessageAlert.LongAlert("Erreur" + ex.Message);
+                    //else MessageAlert.LongAlert("Erreur" + ex.Message);
                 }
                 finally
                 {
@@ -622,7 +632,7 @@ namespace Gatonini
                                 await SecureStorage.SetAsync("ProfilePic", result.ProfilePic);
                                 OnBuyCommand(obj);
                             }
-                            else MessageAlert.LongAlert("Erreur" + ex.Message);
+                            //else MessageAlert.LongAlert("Erreur" + ex.Message);
                         }
                         finally
                         {
@@ -635,6 +645,36 @@ namespace Gatonini
                 }
             }
             else MessageAlert.ShortAlert("Veillez remplir tous les champs de données");
+        }
+
+        private async Task GetAdresseAsync()
+        {
+            var adrese = await SecureStorage.GetAsync("Adresse");
+            if (string.IsNullOrWhiteSpace(adrese))
+            {
+                var location = await Geolocation.GetLastKnownLocationAsync();
+                UserDialogs.Instance.ShowLoading("Obtention adresse.....");
+                double longitude;
+                double latitude;
+                if (location != null)
+                {
+                    latitude = location.Latitude;
+                    longitude = location.Longitude;
+                }
+                else
+                {
+                    location = await Geolocation.GetLocationAsync();
+                    latitude = location.Latitude;
+                    longitude = location.Longitude;
+                }
+
+                //var adresse = ReverseAdresse.ReverseGeoLoc(latitude, longitude);
+                //await SecureStorage.SetAsync("Adresse", adresse.display_name);
+                await SecureStorage.SetAsync("Latitude", latitude.ToString());
+                await SecureStorage.SetAsync("Longitude", longitude.ToString());
+                //Adresse_Livraison = adresse;
+                UserDialogs.Instance.HideLoading();
+            }
         }
 
         private void ClearData()
@@ -734,8 +774,13 @@ namespace Gatonini
                             var result = await Initial.Get(new LogInModel() { Token = await SecureStorage.GetAsync("Token") });
                             OnBuyCommand(obj);
                         }
-                        else
-                            MessageAlert.LongAlert("Erreur" + ex.Message);
+                        //else
+                        //MessageAlert.LongAlert("Erreur" + ex.Message);
+                        
+                        else if (ex.Message.Contains("host"))
+                        {
+                            MessageAlert.LongAlert("Erreur: Veillez verifier votre connection internet");
+                        }
                     }
                     finally
                     {

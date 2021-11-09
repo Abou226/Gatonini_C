@@ -1,5 +1,4 @@
-﻿using Gatonini.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,12 +10,11 @@ using Xamarin.Forms.Xaml;
 namespace Gatonini.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ProfilePage : ContentPage
+    public partial class SettingPage : ContentPage
     {
-        public ProfilePage()
+        public SettingPage()
         {
             InitializeComponent();
-            BindingContext = new ProfileViewModel(this.Navigation);
         }
     }
 }

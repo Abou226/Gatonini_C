@@ -161,40 +161,31 @@ namespace Gatonini.Droid.Activities
                             var list = new List<Client>();
                             list.Add(user);
                             var users = await Client.AddListAsync(list, null);
+                            await SecureStorage.SetAsync("Email", user.Email);
                             if(users != null)
                             {
-                                var token = await Secret.GetAsync(null, "authclient/useremail/" + result.SignInAccount.Email);
-                                if(token != null)
-                                {
-                                    await SecureStorage.SetAsync("Token", token.First().Token);
-                                    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
-                                    await SecureStorage.SetAsync("Nom", token.First().Nom);
-                                    await SecureStorage.SetAsync("ProfilePic", token.First().ProfilePic);
-                                }
+                                //var token = await Secret.GetAsync(null, "authclient/useremail/" + result.SignInAccount.Email);
+                                //if(token != null)
+                                //{
+                                //    await SecureStorage.SetAsync("Token", token.First().Token);
+                                //    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
+                                //    await SecureStorage.SetAsync("Nom", token.First().Nom);
+                                //    await SecureStorage.SetAsync("ProfilePic", token.First().ProfilePic);
+                                //}
                             }
                             else
                             {
-                                var token = await Secret.GetAsync(null, "authclient/useremail/" + result.SignInAccount.Email);
-                                if (token != null)
-                                {
-                                    await SecureStorage.SetAsync("Token", token.First().Token);
-                                    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
-                                    await SecureStorage.SetAsync("Nom", token.First().Nom);
-                                    await SecureStorage.SetAsync("ProfilePic", result.SignInAccount.PhotoUrl.Scheme.ToString() + "" + result.SignInAccount.PhotoUrl.EncodedSchemeSpecificPart.ToString());
-                                }
+                                //var token = await Secret.GetAsync(null, "authclient/useremail/" + result.SignInAccount.Email);
+                                //if (token != null)
+                                //{
+                                //    await SecureStorage.SetAsync("Token", token.First().Token);
+                                //    await SecureStorage.SetAsync("Prenom", token.First().Prenom);
+                                //    await SecureStorage.SetAsync("Nom", token.First().Nom);
+                                //    await SecureStorage.SetAsync("ProfilePic", result.SignInAccount.PhotoUrl.Scheme.ToString() + "" + result.SignInAccount.PhotoUrl.EncodedSchemeSpecificPart.ToString());
+                                //}
                             }
                         }
-                        else
-                        {
-                            var token = await Initial.Get(null, "api/authclient/useremail/" + result.SignInAccount.Email);
-                            if (token != null)
-                            {
-                                await SecureStorage.SetAsync("Token", token.Token);
-                                await SecureStorage.SetAsync("Prenom", token.Prenom);
-                                await SecureStorage.SetAsync("Nom", token.Nom);
-                                await SecureStorage.SetAsync("ProfilePic", result.SignInAccount.PhotoUrl.Scheme.ToString() + "" + result.SignInAccount.PhotoUrl.EncodedSchemeSpecificPart.ToString());
-                            }
-                        }
+                        await SecureStorage.SetAsync("Email", result.SignInAccount.Email);
                     }
                     catch (Exception ex)
                     {

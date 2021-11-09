@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+using Style = Models.Style;
+
 namespace Gatonini.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ProfilePage : ContentPage
+    public partial class Gammes : ContentPage
     {
-        public ProfilePage()
+        public Gammes(Style style)
         {
             InitializeComponent();
-            BindingContext = new ProfileViewModel(this.Navigation);
+            BindingContext = new GammesViewModel(this.Navigation, style);
         }
     }
 }

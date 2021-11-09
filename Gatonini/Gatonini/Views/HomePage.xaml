@@ -57,11 +57,17 @@
                                         FontSize="20" 
                                         TextColor="{DynamicResource ThirdColor}"/>
                                 <StackLayout HorizontalOptions="EndAndExpand" 
-                                             VerticalOptions="Start">
-                                    <Frame CornerRadius="50" 
-                                           WidthRequest="15" 
-                                           HeightRequest="15">
-                                        <ImageButton Source="{Binding ProfilePic}" />
+                                             VerticalOptions="Start"  
+                                             HeightRequest="30">
+                                    <Frame  BackgroundColor="Transparent"
+                                            WidthRequest="30" 
+                                            Padding="0">
+                                        <ImageButton  Source="dots.png" 
+                                                    BackgroundColor="Transparent"
+                                                    WidthRequest="40" 
+                                                    HorizontalOptions="EndAndExpand" 
+                                                    VerticalOptions="Start" 
+                                                    Command="{Binding ProfileCommand}" />
                                     </Frame>
                                 </StackLayout>
                             </StackLayout>
@@ -70,7 +76,7 @@
                                         Text="Veillez selectionner" 
                                         TextColor="{DynamicResource ThirdColor}"/>
                                 <Label  Margin="5,-2,0,-5" 
-                                        Text="une catégorie pour afficher son contenu." 
+                                        Text="un gâteau pour afficher." 
                                         TextColor="{DynamicResource ThirdColor}"
                                         FontAttributes="Bold" 
                                         FontSize="18"/>
@@ -99,29 +105,32 @@
                                                     </VisualState>
                                                 </VisualStateGroup>
                                             </VisualStateManager.VisualStateGroups>
-                                            <Label  Text="{Binding Title}" 
+
+                                            <Grid ColumnDefinitions="*,auto" RowDefinitions="*,40" Margin="0,0,0,0" >
+                                                <Label  Text="{Binding Title}" Grid.Column="0" Grid.Row="0"
                                                     TextColor="{DynamicResource Secondary}" 
                                                     Margin="5,0" FontSize="20" 
                                                     FontAttributes="Bold" />
 
-                                            <StackLayout HorizontalOptions="End" VerticalOptions="Start">
-                                                <Label  Text="Afficher Tout" 
+                                                <StackLayout HorizontalOptions="End" VerticalOptions="Start" Grid.Column="1" Grid.Row="0" >
+                                                    <Label  Text="Afficher Tout" 
                                                     HorizontalOptions="End" 
-                                                    VerticalOptions="Start"
+                                                    VerticalOptions="Start" 
                                                     FontSize="16" 
                                                     TextColor="Gray">
-                                                </Label>
-                                                <StackLayout.GestureRecognizers>
-                                                    <TapGestureRecognizer 
+                                                    </Label>
+                                                    <StackLayout.GestureRecognizers>
+                                                        <TapGestureRecognizer 
                                                                             NumberOfTapsRequired="1"
                                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel1:HomeViewModel}}, Path=StyleTappedCommand}"		
                                                                             CommandParameter="{Binding .}">
-                                                    </TapGestureRecognizer>
-                                                </StackLayout.GestureRecognizers>
-                                            </StackLayout>
-                                            
+                                                        </TapGestureRecognizer>
+                                                    </StackLayout.GestureRecognizers>
+                                                </StackLayout>
+                                            </Grid>
+
                                             <CollectionView ItemsSource="{Binding Gammes}" 
-                                                            Margin="0,10" HeightRequest="130" >
+                                                            Margin="0,10" HeightRequest="140" >
                                                 <CollectionView.ItemsLayout>
                                                     <LinearItemsLayout  Orientation="Horizontal" 
                                                                         ItemSpacing="10" />
@@ -141,8 +150,8 @@
                                                                     </VisualState>
                                                                 </VisualStateGroup>
                                                             </VisualStateManager.VisualStateGroups>
-                                                            <pancake:PancakeView    x:Name="myPancakeView" 
-                                                                                    Padding="10" Margin="5,15,5,0" 
+                                                            <pancake:PancakeView    x:Name="myPancakeView" CornerRadius="7"
+                                                                                    Padding="5,2" Margin="5,15,5,0" 
                                                                                     BackgroundColor="{DynamicResource Primary}" >
                                                                 <pancake:PancakeView.Border>
                                                                     <pancake:Border Color="{DynamicResource Primary}" 
@@ -159,7 +168,7 @@
                                                                             Margin="0,5,0,5"
                                                                             HorizontalOptions="Center"
                                                                             VerticalOptions="Center"
-                                                                            HeightRequest="80"
+                                                                            HeightRequest="100"
                                                                             Aspect="AspectFill"/>
                                                                 </StackLayout>
                                                             </pancake:PancakeView>

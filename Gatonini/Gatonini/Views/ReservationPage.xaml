@@ -158,6 +158,7 @@
                                                        Padding="3">
                                                     <Label  x:Name="lblNom" 
                                                             FontAttributes="Bold" 
+                                                            HorizontalTextAlignment="Center"
                                                             FontSize="20" 
                                                             TextColor="{DynamicResource Primary}" Text="{Binding Designation}">
 

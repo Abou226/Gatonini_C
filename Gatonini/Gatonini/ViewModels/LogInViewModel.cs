@@ -7,6 +7,8 @@ using Gatonini.ViewModels;
 using Xamarin.Forms;
 using BaseVM;
 using Gatonini.Views;
+using Xamarin.Essentials;
+using Models;
 
 [assembly: Dependency(typeof(BaseViewModel))]
 
@@ -171,7 +173,13 @@ namespace Gatonini.ViewModels
         {
             if (await _authService.SignInWithGoogle(token))
             {
-                Application.Current.MainPage = new NavigationPage(new HomePage());
+                var toke = await SecureStorage.GetAsync("Token");
+                var email = await SecureStorage.GetAsync("Email");
+                if (!string.IsNullOrWhiteSpace(toke) 
+                    || !string.IsNullOrWhiteSpace(email))
+                {
+                    Application.Current.MainPage = new NavigationPage(new HomePage());
+                }
             }
         }
     }

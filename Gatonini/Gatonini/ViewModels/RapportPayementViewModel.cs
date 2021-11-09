@@ -211,9 +211,10 @@ namespace Gatonini
                     }
                     else if (ex.Message.Contains("host"))
                     {
+                        DependencyService.Get<IMessage>().LongAlert("Erreur: Veillez verifier votre connection internet");
                         await GetItemsAsync();
                     }
-                    else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
+                    //else DependencyService.Get<IMessage>().ShortAlert("Erreur : " + ex.Message);
                 }
                 finally
                 {
