@@ -58,13 +58,12 @@
                                         TextColor="{DynamicResource ThirdColor}"/>
                                 <StackLayout HorizontalOptions="EndAndExpand" 
                                              VerticalOptions="Start"  
-                                             HeightRequest="30">
-                                    <Frame  BackgroundColor="Transparent"
-                                            WidthRequest="30" 
+                                             HeightRequest="40">
+                                    <Frame  BackgroundColor="Transparent" CornerRadius="23"
+                                            BorderColor="{DynamicResource Secondary}"
                                             Padding="0">
-                                        <ImageButton  Source="dots.png" 
+                                        <ImageButton  Source="{Binding ProfilePic}" 
                                                     BackgroundColor="Transparent"
-                                                    WidthRequest="40" 
                                                     HorizontalOptions="EndAndExpand" 
                                                     VerticalOptions="Start" 
                                                     Command="{Binding ProfileCommand}" />

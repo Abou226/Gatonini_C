@@ -111,7 +111,6 @@ namespace Gatonini.ViewModels
         {
             var source = await SourceService.GetProjectSourcesAsync("GatoniniSource");
             await SecureStorage.SetAsync("Source", source);
-
         }
         
         public ICommand RefreshCommand { get; }
@@ -210,7 +209,7 @@ namespace Gatonini.ViewModels
                 try
                 {
                     IsRunning = true;
-
+                    
                     await GetSource();
 
                     UserDialogs.Instance.ShowLoading("Chargement.....");
@@ -257,6 +256,7 @@ namespace Gatonini.ViewModels
             }
         }
 
+        
         private async Task TokenManagement()
         {
             try
@@ -272,6 +272,8 @@ namespace Gatonini.ViewModels
                         if (resul != null)
                         {
                             await SecureStorage.SetAsync("Token", resul.Token);
+                            await SecureStorage.SetAsync("Email", resul.Email);
+                            await SecureStorage.SetAsync("ProfilePic", resul.ProfilePic);
                         }
                     }
                 }
@@ -283,6 +285,7 @@ namespace Gatonini.ViewModels
                         await SecureStorage.SetAsync("Token", token.Token);
                         await SecureStorage.SetAsync("Prenom", token.Prenom);
                         await SecureStorage.SetAsync("Nom", token.Nom);
+                        await SecureStorage.SetAsync("Email", token.Email);
                         await SecureStorage.SetAsync("ProfilePic", token.ProfilePic);
                     }
                 }

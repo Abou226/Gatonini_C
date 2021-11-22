@@ -15,6 +15,7 @@ using Xamarin.Essentials;
 using Android.Locations;
 using System.Collections.Generic;
 using System.Linq;
+using Plugin.FirebasePushNotification;
 using Xamarin.Forms.Internals;
 using Gatonini.Droid.Services;
 
@@ -36,6 +37,7 @@ namespace Gatonini.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             //InitializeLocationManager();
+            FirebasePushNotificationManager.ProcessIntent(this, Intent);
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

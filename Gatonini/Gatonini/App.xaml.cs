@@ -44,6 +44,7 @@ namespace Gatonini
             {
                 Resources["Primary"] = Resources["ThirdColor"];
                 Resources["ThirdColor"] = Resources["Primary"];
+                Resources["LightDark"] = Resources["Light"];
             }
             else if (currentTheme == OSAppTheme.Light)
             {

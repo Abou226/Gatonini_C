@@ -27,7 +27,7 @@
                     <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer 
                                             NumberOfTapsRequired="1"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:OtpCheckViewModel}}, Path=BackCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:OtpCheckViewModel}}, Path=StyleTappedCommand}"		
                                             CommandParameter="{Binding .}">
                         </TapGestureRecognizer>
                     </StackLayout.GestureRecognizers>
@@ -46,13 +46,55 @@
         </Grid>
         <ScrollView Grid.Row="1" 
                     Margin="0,-7,0,0" 
-                    Padding="0">
-            <Grid   HorizontalOptions="Center" 
-                    VerticalOptions="Center">
+                    Padding="0" BackgroundColor="{DynamicResource Primary}">
+            <Grid   Margin="20,40"  RowDefinitions="auto, auto, auto"
+                    HorizontalOptions="Center" 
+                    VerticalOptions="Start">
 
-                <StackLayout>
-                    <Image Source="message.png" />
+                <StackLayout VerticalOptions="Start" HorizontalOptions="Center" Margin="0,0,0,20">
+                    <Label  TextColor="{DynamicResource ThirdColor}" FontSize="14" >
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Code envoyé au numéro " />
+                                <Span Text="{Binding Telephone}" FontAttributes="Bold"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
                 </StackLayout>
+                <Grid Grid.Row="1" ColumnDefinitions="auto, auto, auto, auto, auto, auto">
+                    <Frame Padding="0" CornerRadius="10" WidthRequest="40">
+                        <Entry Text="{Binding A}" TextColor="{DynamicResource Secondary}" Keyboard="Numeric" MaxLength="1"/>
+                    </Frame>
+                    <Frame Grid.Column="1" Padding="0" CornerRadius="10" WidthRequest="40">
+                        <Entry Text="{Binding B}" TextColor="{DynamicResource Secondary}" Keyboard="Numeric" MaxLength="1"/>
+                    </Frame>
+                    <Frame Grid.Column="2" Padding="0" CornerRadius="10" WidthRequest="40">
+                        <Entry Text="{Binding C}" TextColor="{DynamicResource Secondary}" Keyboard="Numeric" MaxLength="1"/>
+                    </Frame>
+                    <Frame Grid.Column="3" Padding="0" CornerRadius="10" WidthRequest="40">
+                        <Entry Text="{Binding D}" TextColor="{DynamicResource Secondary}" Keyboard="Numeric" MaxLength="1"/>
+                    </Frame>
+                    <Frame Grid.Column="4" Padding="0" CornerRadius="10" WidthRequest="40">
+                        <Entry Text="{Binding E}" TextColor="{DynamicResource Secondary}" Keyboard="Numeric" MaxLength="1"/>
+                    </Frame>
+                    <Frame Grid.Column="5" Padding="0" CornerRadius="10" WidthRequest="40">
+                        <Entry Text="{Binding F}" TextColor="{DynamicResource Secondary}" Keyboard="Numeric" MaxLength="1"/>
+                    </Frame>
+                </Grid>
+                <Grid Grid.Row="2" Margin="0,30">
+                    <Label >
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Pas reçu votre code ? "/>
+                                <Span Text="Renvoyer à nouveau" FontAttributes="Bold" TextColor="{DynamicResource ThirdColor}" >
+                                    <Span.GestureRecognizers>
+                                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding }" />
+                                    </Span.GestureRecognizers>
+                                </Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </Grid>
             </Grid>
         </ScrollView>
     </Grid>

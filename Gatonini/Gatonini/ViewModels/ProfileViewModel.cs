@@ -16,8 +16,8 @@ using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(ClientService<Models.File>))]
-[assembly: Dependency(typeof(ClientService<Models.Sms>))]
+using Sms = Models.Sms;
+[assembly: Dependency(typeof(DataService<Sms>))]
 [assembly: Dependency(typeof(DataService<EditObject>))]
 [assembly: Dependency(typeof(DataService<Client>))]
 [assembly: Dependency(typeof(InitialService))]
@@ -111,7 +111,7 @@ namespace Gatonini.ViewModels
         public ICommand BackCommand { get; }
         public INavigation Navigation { get; }
 
-        public IDataService<Models.Sms> SmsService { get; }
+        public IDataService<Sms> SmsService { get; }
 
         public FileResult FileResult { get; set; }
         private ImageSource imageSource;
@@ -166,7 +166,7 @@ namespace Gatonini.ViewModels
             EditService = DependencyService.Get<IDataService<EditObject>>();
             BackCommand = new Command(OnBackCommand);
             ProfileImageCommand = new Command(OnProfileImageCommand);
-            SmsService = DependencyService.Get<IDataService<Models.Sms>>();
+            SmsService = DependencyService.Get<IDataService<Sms>>();
             FileService = DependencyService.Get<IDataService<Models.File>>();
             BaseVM = DependencyService.Get<IBaseViewModel>();
             Initial = DependencyService.Get<IInitialService>();
@@ -189,17 +189,17 @@ namespace Gatonini.ViewModels
                     {
                         UserDialogs.Instance.ShowLoading("Validation.....");
                         
-
-                        List<Models.Sms> list = new List<Models.Sms>();
-                        
-                        var item = await SmsService.AddAsync(new Models.Sms() { Telephone = Telephone, SenderId = "Gatonini" }, await SecureStorage.GetAsync("Token"), "clients");
+                        List<Sms> list = new List<Sms>();
+                        list.Add(new Sms() { Telephone = Telephone, SenderId = "Gatonini", Type = "Promotional" });
+                        var item = await SmsService.SimplePostAsync(list, await SecureStorage.GetAsync("Token"), "clientsms/otp_send");
 
                         if (item != null)
                         {
+                            UserDialogs.Instance.HideLoading();
                             IsNotBusy = true;
-                            await Navigation.PushAsync(new OtoCheckPage());
+                            await Navigation.PushAsync(new OtoCheckPage(Telephone));
                         }
-                        else DependencyService.Get<IMessage>().LongAlert("Erreur: Modification non effectuée");
+                        else DependencyService.Get<IMessage>().LongAlert("Erreur: verification non envoyée");
                     }
                 }
                 catch (Exception ex)

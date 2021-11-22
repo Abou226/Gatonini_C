@@ -1,5 +1,6 @@
 ﻿using Acr.UserDialogs;
 using BaseVM;
+using Gatonini.Views;
 using Models;
 using Services;
 using System;
@@ -11,6 +12,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 
 [assembly: Dependency(typeof(ClientService<Models.Sms>))]
+[assembly: Dependency(typeof(ClientService<Models.EditObject>))]
 [assembly: Dependency(typeof(InitialService))]
 
 namespace Gatonini.ViewModels
@@ -23,13 +25,37 @@ namespace Gatonini.ViewModels
         public ICommand OtpCheckCommand { get; }
         public IInitialService Initial { get; }
         public string Telephone { get; set; }
-        public OtpCheckViewModel(INavigation navigation)
+        
+        public OtpCheckViewModel(INavigation navigation, string telephone): this()
         {
             Navigation = navigation;
+            Telephone = telephone;
             Initial = DependencyService.Get<IInitialService>();
             EditService = DependencyService.Get<IDataService<Models.EditObject>>();
             OtpCheckCommand = new Command(OnOtpCheckCommand);
             BaseVM = DependencyService.Get<IBaseViewModel>();
+        }
+
+        public OtpCheckViewModel()
+        {
+            MessagingCenter.Subscribe<OtoCheckPage, string>(this, "OtpReceived", (sender, arg) =>
+            {
+                GetChars(arg);
+            });
+        }
+
+        private void GetChars(string arg)
+        {
+            var ps = arg.ToCharArray();
+            if(ps.Length == 6)
+            {
+                A = ps[0].ToString();
+                B = ps[1].ToString();
+                C = ps[2].ToString();
+                D = ps[3].ToString();
+                E = ps[4].ToString();
+                F = ps[5].ToString();
+            }
         }
 
         private async void OnOtpCheckCommand(object obj)
@@ -54,7 +80,7 @@ namespace Gatonini.ViewModels
                         var code = $"{A}{B}{C}{D}{E}{F}";
                         List<EditObject> list = new List<EditObject>();
                         list.Add(new EditObject() { Op = "Replace", Value = Telephone, Path = "Telephone" });
-                        var item = await EditService.UpdateListAsync(list, await SecureStorage.GetAsync("Token"), $"otp_check/{code}" );
+                        var item = await EditService.UpdateListAsync(list, await SecureStorage.GetAsync("Token"), $"sms/otp_check/{code}" );
 
                         if (item != null)
                         {

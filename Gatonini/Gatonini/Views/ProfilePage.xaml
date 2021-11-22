@@ -52,17 +52,14 @@
                 <pancake:PancakeView CornerRadius="0,0,30,30" 
                                      BackgroundColor="{DynamicResource Primary}">
                     <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                        <Frame WidthRequest="70" 
-                           HorizontalOptions="Center" 
-                           VerticalOptions="Center" 
-                           Margin="0,0,0,40" 
-                           CornerRadius="55" 
-                           HeightRequest="70">
-                            <ImageButton Source="{Binding PictureSource}" 
-                               Aspect="Fill" 
-                               HorizontalOptions="Center" 
-                               VerticalOptions="Center"/>
-                            
+                        <Frame  BackgroundColor="Transparent" 
+                                 HorizontalOptions="Center" HeightRequest="100" WidthRequest="100"
+                                        CornerRadius="50"    BorderColor="{DynamicResource Secondary}"
+                                            Padding="0">
+                            <ImageButton  Source="{Binding PictureSource}" 
+                                                    BackgroundColor="Transparent"
+                                                    HorizontalOptions="Center" 
+                                                    VerticalOptions="Center" HeightRequest="100" WidthRequest="100"/>
                         </Frame>
                         <Label TextColor="{DynamicResource Secondary}" FontSize="20"  >
                             <Label.FormattedText>
@@ -88,29 +85,48 @@
                 <pancake:PancakeView    Grid.Row="1"
                                         BackgroundColor="White"
                                         CornerRadius="0,0,0,0">
-                    <StackLayout Margin="30,10" HorizontalOptions="FillAndExpand">
+                    <Grid Margin="30,10" RowDefinitions="auto, auto, auto, auto" >
 
-                        <Entry Grid.Column="1" Text="{Binding Prenom}" 
-                               Placeholder="Prenom" PlaceholderColor="{DynamicResource Secondary}"
+                        <Entry  Grid.Row="0" 
+                                Text="{Binding Prenom}" 
+                                Placeholder="Prenom" 
+                                PlaceholderColor="{DynamicResource Secondary}" 
                                 VerticalOptions="Center" CharacterSpacing="3"
-                                HorizontalOptions="StartAndExpand" 
+                                HorizontalOptions="FillAndExpand" 
                                 TextColor="{DynamicResource Secondary}"/>
                         
-                        <Entry  Grid.Column="1" Text="{Binding Nom}" 
+                        <Entry  Grid.Row="1" Text="{Binding Nom}" 
                                 VerticalOptions="Center" CharacterSpacing="3"
                                 Placeholder="Nom de famille" 
-                                PlaceholderColor="{DynamicResource Secondary}"
-                                HorizontalOptions="StartAndExpand" 
-                                TextColor="{DynamicResource Secondary}"/>
-                        <Entry  Grid.Column="1" Text="{Binding Telephone}" WidthRequest="200"
-                                Placeholder="Telephone" 
-                                PlaceholderColor="{DynamicResource Secondary}"
-                                VerticalOptions="Center" Keyboard="Numeric" MaxLength="15"
-                                CharacterSpacing="3"
-                                HorizontalOptions="StartAndExpand" 
+                                PlaceholderColor="{DynamicResource Secondary}" 
+                                HorizontalOptions="FillAndExpand" 
                                 TextColor="{DynamicResource Secondary}"/>
 
+                        <Grid Grid.Row="2" ColumnDefinitions="*, auto">
+                            <Entry  Text="{Binding Telephone}" 
+                                    WidthRequest="250"
+                                    Placeholder="Numero +223xxx" 
+                                    PlaceholderColor="{DynamicResource Secondary}"
+                                    VerticalOptions="Center" 
+                                    Keyboard="Telephone" 
+                                    MaxLength="15"
+                                    CharacterSpacing="3"
+                                    HorizontalOptions="StartAndExpand" 
+                                    TextColor="{DynamicResource Secondary}"/>
+                            <Frame Padding="0" Grid.Column="1" 
+                                   CornerRadius="20" HeightRequest="15"
+                                   BackgroundColor="{DynamicResource Primary}" 
+                                   BorderColor="{DynamicResource Secondary}">
+                                <Button Grid.Column="1" 
+                                        Padding="0" 
+                                        Text="Verifier" 
+                                        FontSize="12" 
+                                        BackgroundColor="Transparent"
+                                        Command="{Binding OtpSend}" />
+                            </Frame>
+                        </Grid>
                         <Frame BackgroundColor="{DynamicResource Secondary}" 
+                               Grid.Row="3"
                                Margin="0,30"
                                CornerRadius="20" 
                                Padding="10,-5" 
@@ -121,7 +137,7 @@
                                     TextColor="{DynamicResource Primary}" 
                                     BackgroundColor="Transparent" />
                         </Frame>
-                    </StackLayout>
+                    </Grid>
                 </pancake:PancakeView>
             </Grid>
         </ScrollView>

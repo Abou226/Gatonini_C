@@ -73,7 +73,7 @@
                             <Entry Grid.Row="1" Margin="40,0,40,0" Text="{Binding Username}" 
                                    BackgroundColor="{DynamicResource VeryLight}"
                                    TextColor="{DynamicResource ThirdColor}" 
-                                   PlaceholderColor="{DynamicResource FourthColor}"
+                                   PlaceholderColor="{DynamicResource LightDark}"
                                    Placeholder="Username" 
                                    x:Name="txtUsername" 
                                    Keyboard="Text" />
@@ -86,7 +86,7 @@
                                     <Entry  Margin="40,0,0,0" Text="{Binding Password}" 
                                             BackgroundColor="{DynamicResource VeryLight}" 
                                             TextColor="{DynamicResource ThirdColor}" 
-                                            PlaceholderColor="{DynamicResource FourthColor}"
+                                            PlaceholderColor="{DynamicResource LightDark}"
                                             Placeholder="Password" 
                                             x:Name="txtPassword"
                                             IsPassword="{Binding IsPassword}"  />
@@ -161,8 +161,6 @@
                                         </StackLayout.GestureRecognizers>
                                     </StackLayout>
                                 </pancake:PancakeView>
-
-                                
                             </Grid>
                         </Grid>
                     </pancake:PancakeView>

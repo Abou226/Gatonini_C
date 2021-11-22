@@ -12,10 +12,10 @@ namespace Gatonini.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OtoCheckPage : ContentPage
     {
-        public OtoCheckPage()
+        public OtoCheckPage(string telephone)
         {
             InitializeComponent();
-            BindingContext = new OtpCheckViewModel(this.Navigation);
+            BindingContext = new OtpCheckViewModel(this.Navigation, telephone);
         }
     }
 }
