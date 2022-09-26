@@ -54,10 +54,10 @@ namespace Gatonini.Droid
             if (app == null)
             {
                 var options = new FirebaseOptions.Builder()
-                .SetProjectId("gatonini-172f1")
-                .SetApplicationId("gatonini-172f1")
-                .SetApiKey("AIzaSyAWrMKTs8bTT2Wqt-G__Cw8PbPrPffce5s")
-                .SetStorageBucket("gatonini-172f1.appspot.com")
+                .SetProjectId("")
+                .SetApplicationId("")
+                .SetApiKey("")
+                .SetStorageBucket("")
                 .Build();
 
                 //if (app == null)
